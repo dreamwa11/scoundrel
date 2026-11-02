@@ -216,7 +216,7 @@
     return z;
   }
   function dullMsg(card) {
-    state.message = 'Your weapon is too dull for the ' + S.monsterName(card) + ' (it only hits ' + state.weapon.last + ' or lower).';
+    state.message = 'Your weapon is too dull for the ' + S.monsterName(card) + '. It only hits ' + state.weapon.last + ' or lower.';
     renderMessage(true); haptic('warning');
   }
 
