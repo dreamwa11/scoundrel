@@ -475,21 +475,27 @@
       c.style.transition = 'transform .38s cubic-bezier(.5,0,.75,.35)';
       c.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(-6deg) scale(.96)';
     }); });
+    if (!toStack) {
+      // bare-handed: the monster slams into the hero, then the hero takes the hit (red flash, number, shake)
+      setTimeout(function () {
+        shake();
+        c.style.transition = 'transform .2s ease, opacity .2s ease';
+        c.style.transform = 'translate3d(' + tx + 'px,' + (ty + 12) + 'px,0) rotate(8deg) scale(.7)';
+        c.style.opacity = '0';
+        done();
+      }, 380);
+      setTimeout(function () { c.remove(); }, 600);
+      return;
+    }
     setTimeout(function () {
       blastAt(t); shake();
       c.style.transition = 'transform .1s ease-out';
       c.style.transform = 'translate3d(' + tx + 'px,' + (ty + t.height * 0.08) + 'px,0) rotate(4deg) scale(.92)';
     }, 380);
     setTimeout(function () {
-      if (toStack) {
-        c.style.transition = 'transform .22s ease, opacity .22s ease';
-        c.style.transform = 'translate3d(' + (t.left + 20) + 'px,' + (t.top - 4) + 'px,0) rotate(8deg) scale(.66)';
-        c.style.opacity = '0.2';
-      } else {
-        c.style.transition = 'transform .24s ease, opacity .24s ease';
-        c.style.transform = 'translate3d(' + tx + 'px,' + (ty + 10) + 'px,0) rotate(10deg) scale(.6)';
-        c.style.opacity = '0';
-      }
+      c.style.transition = 'transform .22s ease, opacity .22s ease';
+      c.style.transform = 'translate3d(' + (t.left + 20) + 'px,' + (t.top - 4) + 'px,0) rotate(8deg) scale(.66)';
+      c.style.opacity = '0.2';
     }, 540);
     setTimeout(function () { c.remove(); done(); }, 800);
   }
