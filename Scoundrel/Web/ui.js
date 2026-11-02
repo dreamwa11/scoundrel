@@ -345,7 +345,7 @@
   }
 
   function renderWeapon() {
-    var w = state.weapon, html = '<div class="wstack" id="wstack">';
+    var w = state.weapon, html = '<div class="wstack' + (!w || !w.slain.length ? ' solo' : '') + '" id="wstack">';
     if (!w) {
       html += '<div class="card empty">' + A.icon('fist') + '<br>No weapon</div>';
     } else {

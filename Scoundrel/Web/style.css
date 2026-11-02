@@ -289,7 +289,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .wstack { position: relative; width: calc(var(--cw) + 30px); height: var(--ch); }
 .wstack .card { position: absolute; top: 0; left: 0; }
 .wstack .slain { transform-origin: 40% 100%; pointer-events: none; }
-.wstack > .card.empty { left: 15px; }
+.wstack.solo > .card:first-child { left: 15px; }
 .slot .label { position: relative; z-index: 40; }
 .badge {
   position: absolute; z-index: 30; right: -2px; bottom: -6px;
