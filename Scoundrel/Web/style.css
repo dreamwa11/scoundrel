@@ -13,9 +13,9 @@
   --wood-d: #301706;
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
-  --gap: 8px;
-  --cw: min(calc((100vw - 24px - 3 * var(--gap)) / 4), 108px);
-  --ch: calc(var(--cw) * 1.4);
+  --gap: 6px;
+  --cw: min(calc((100vw - 14px - 3 * var(--gap)) / 4), 112px);
+  --ch: calc(var(--cw) * 1.48);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -109,7 +109,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 2px, rgba(0,0,0,0) 2px 4px) 0 40px / 100% 100% no-repeat,
     linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .45) 32%, rgba(0, 0, 0, .72) 100%);
-  padding: 16px 12px 12px;
+  padding: 16px 7px 12px;
 }
 .trim { display: none; position: absolute; left: 0; right: 0; top: 6px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold) 15%, var(--gold) 85%, transparent); opacity: .8; }
 .room { display: grid; grid-template-columns: repeat(4, var(--cw)); gap: var(--gap); justify-content: center; min-height: calc(var(--ch) + 40px); }
@@ -362,7 +362,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 
 /* short screens (iPhone SE, mini) */
 @media (max-height: 700px) {
-  :root { --cw: min(calc((100vw - 24px - 3 * var(--gap)) / 4), 76px); }
+  :root { --cw: min(calc((100vw - 14px - 3 * var(--gap)) / 4), 82px); }
   .topbar { min-height: 40px; }
   .roomtitle { font-size: 22px; }
   .panel { padding: 8px 12px 6px; }
