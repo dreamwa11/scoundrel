@@ -110,7 +110,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .card .name { z-index: 2; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
 .card .corner { position: absolute; top: 9px; left: 10px; width: calc(var(--cw) * .22); height: calc(var(--cw) * .22); color: var(--ink); }
 .card .corner .icon { width: 100%; height: 100%; }
-.card .val { position: absolute; top: 6px; right: 11px; font-family: 'Astloch', serif; font-weight: 700; font-size: calc(var(--cw) * .34); line-height: 1; color: var(--ink); text-shadow: 0 1px 0 #000; }
+.card .val { position: absolute; top: 7px; right: 11px; font-family: 'PirataOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); line-height: 1; color: var(--ink); text-shadow: 0 1px 0 #000; }
 .card .name { position: absolute; bottom: 5px; left: 0; right: 0; text-align: center; font-size: calc(var(--cw) * .115); letter-spacing: .5px; text-transform: uppercase; color: var(--ink-dim); }
 .card .val.face { font-family: 'PirataOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); top: 7px; }
 .card.potion .val, .card.potion .corner { color: #ff5a4f; }
