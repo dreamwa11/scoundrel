@@ -226,10 +226,10 @@
       if (busy || state.over || (e.button && e.button !== 0)) return;
       var pid = e.pointerId, sx = e.clientX, sy = e.clientY, px = sx, py = sy;
       var r0 = el.getBoundingClientRect(), offX = sx - r0.left, offY = sy - r0.top;
-      var ghost = null, zones = null, over = null, raf = 0;
+      var ghost = null, zones = null, over = null, raf = 0, noGo = [];
       function frame() {
         raf = 0;
-        ghost.style.transform = 'translate3d(' + (px - offX) + 'px,' + (py - offY) + 'px,0) rotate(' + Math.max(-8, Math.min(8, (px - sx) / 40)).toFixed(1) + 'deg)';
+        ghost.style.transform = 'translate3d(' + (px - offX) + 'px,' + (py - offY) + 'px,0) rotate(' + Math.max(-8, Math.min(8, (px - sx) / 40)).toFixed(1) + 'deg) scale(1.12)';
         var z = null;
         for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, px, py, 16)) { z = zones[k]; break; }
         if (z !== over) {
@@ -247,12 +247,15 @@
           ghost.classList.remove('deal', 'slain'); ghost.classList.add('drag');
           ghost.removeAttribute('style');
           ghost.style.width = r0.width + 'px'; ghost.style.height = r0.height + 'px';
+          ghost.style.transformOrigin = offX + 'px ' + offY + 'px';
           ghost.style.transform = 'translate3d(' + r0.left + 'px,' + r0.top + 'px,0)';
           document.body.appendChild(ghost);
           el.style.visibility = 'hidden';
           zones = getZones();
-          frame();
           zones.forEach(function (z) { z.el.classList.add(z.ok === false ? 'drop-off' : 'drop-target'); });
+          noGo = allSpots().filter(function (s) { return s !== el && !zones.some(function (z) { return z.el === s; }); });
+          noGo.forEach(function (s) { s.classList.add('drop-no'); });
+          frame();
           haptic('tap');
         }
         if (ev.cancelable) ev.preventDefault();
@@ -269,6 +272,7 @@
         var z = null;
         if (ev.type === 'pointerup') for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, ev.clientX, ev.clientY, 16)) { z = zones[k]; break; }
         zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad'); });
+        noGo.forEach(function (s) { s.classList.remove('drop-no'); });
         if (z && z.ok !== false && onDrop(z, ghost)) return;
         if (z && z.ok === false && z.card) dullMsg(z.card);
         // snap back
@@ -280,6 +284,15 @@
       window.addEventListener('pointerup', end);
       window.addEventListener('pointercancel', end);
     });
+  }
+
+  // every place a card could land, used to dim the ones that aren't allowed
+  function allSpots() {
+    var s = [];
+    if ($('hero')) s.push($('hero'));
+    if ($('weaponSlot')) s.push($('weaponSlot'));
+    Array.prototype.forEach.call($('room').querySelectorAll('.cell[data-id] .card'), function (c) { s.push(c); });
+    return s;
   }
 
   function attachDrag(c, card) {
@@ -302,8 +315,7 @@
     makeDraggable(wc, weaponZones, function (z, ghost) {
       var i = roomIndex(z.id);
       if (i === -1) return false;
-      ghost.remove(); wc.style.visibility = '';
-      act(i, 'weapon');
+      act(i, 'weapon', null, ghost);
       return true;
     });
   }
@@ -418,7 +430,7 @@
     return m;
   }
 
-  function act(i, mode, srcEl) {
+  function act(i, mode, srcEl, strikeGhost) {
     if (busy || state.over) return;
     var prev = state;
     var res = S.resolve(state, i, mode);
@@ -426,26 +438,23 @@
     busy = true; renderButtons();
 
     var cardEl = srcEl || $('room').querySelector('.cell[data-id="' + state.room[i].id + '"] .card');
-    var target, opts = {};
-    if (ev.kind === 'kill-weapon' || ev.kind === 'equip') { target = rectOf($('wstack')); opts.rot = 6; }
-    else if (ev.kind === 'kill-fist') { target = rectOf($('hero')); opts.scale = 0.5; opts.fade = true; opts.rot = -12; }
-    else if (ev.kind === 'potion') { target = rectOf($('hero')); opts.scale = 0.4; opts.fade = true; }
-    else { var r = rectOf(cardEl); target = { left: r.left, top: r.top + 140, width: r.width, height: r.height }; opts.fade = true; opts.scale = 0.8; opts.rot = 20; }
 
     if (ev.kind === 'kill-fist' || ev.kind === 'kill-weapon') haptic(ev.damage ? 'hit' : 'kill', ev.damage);
     else if (ev.kind === 'equip') haptic('equip');
     else if (ev.kind === 'potion') haptic('heal');
     else haptic('warning');
 
-    flyCard(cardEl, target, opts).then(function () {
+    function finish() {
       if (srcEl && srcEl.parentNode) srcEl.remove();
       state = res.state;
       renderAll(newIdsMap(prev.room, state.room), true);
+      if (ev.kind === 'kill-weapon') {
+        var sl = $('wstack').querySelectorAll('.slain');
+        if (sl.length) sl[sl.length - 1].classList.add('pop-in');
+      }
       if (ev.damage) {
         floater('−' + ev.damage, 'dmg'); hurtFlash(false); bumpHero();
         if (ev.damage >= 5) shake();
-      } else if (ev.kind === 'kill-weapon') {
-        floater('no damage', 'zero');
       } else if (ev.heal) {
         floater('+' + ev.heal, 'heal'); hurtFlash(true); bumpHero();
       }
@@ -453,8 +462,42 @@
       if (state.over) {
         setTimeout(function () { haptic(state.won ? 'win' : 'death'); showEnd(); busy = false; }, ev.damage ? 900 : 600);
       } else { busy = false; renderButtons(); }
-    });
+    }
+
+    if (strikeGhost && ev.kind === 'kill-weapon') {
+      // weapon lunges into the monster, slash, weapon returns, monster vanishes and reappears on the stack
+      var mr = rectOf(cardEl), g = strikeGhost, gw = parseFloat(g.style.width), gh = parseFloat(g.style.height);
+      var tx = mr.left + (mr.width - gw) / 2, ty = mr.top + (mr.height - gh) / 2;
+      g.style.transformOrigin = '50% 50%';
+      g.style.setProperty('transition', 'transform .13s cubic-bezier(.5,0,.9,.4)', 'important');
+      g.style.transform = 'translate3d(' + (tx + 10) + 'px,' + (ty + 14) + 'px,0) rotate(-18deg) scale(1.04)';
+      setTimeout(function () {
+        cardEl.classList.add('struck');
+        var s = el('<div class="slash"></div>');
+        s.style.left = (mr.left + mr.width / 2) + 'px'; s.style.top = (mr.top + mr.height / 2) + 'px';
+        s.style.width = (mr.width * 1.5) + 'px';
+        document.body.appendChild(s);
+        setTimeout(function () { s.remove(); }, 450);
+      }, 120);
+      setTimeout(function () {
+        var home = $('wstack').querySelector('.card:not(.slain)') || $('wstack');
+        var hr = rectOf(home);
+        g.style.setProperty('transition', 'transform .34s cubic-bezier(.3,.7,.3,1)', 'important');
+        g.style.transform = 'translate3d(' + hr.left + 'px,' + hr.top + 'px,0) rotate(0deg) scale(1)';
+        cardEl.classList.add('vanish');
+      }, 430);
+      setTimeout(function () { g.remove(); finish(); }, 800);
+      return;
+    }
+
+    var target, opts = {};
+    if (ev.kind === 'kill-weapon' || ev.kind === 'equip') { target = rectOf($('wstack')); opts.rot = 6; }
+    else if (ev.kind === 'kill-fist') { target = rectOf($('hero')); opts.scale = 0.5; opts.fade = true; opts.rot = -12; }
+    else if (ev.kind === 'potion') { target = rectOf($('hero')); opts.scale = 0.4; opts.fade = true; }
+    else { var r = rectOf(cardEl); target = { left: r.left, top: r.top + 140, width: r.width, height: r.height }; opts.fade = true; opts.scale = 0.8; opts.rot = 20; }
+    flyCard(cardEl, target, opts).then(finish);
   }
+
 
   function doFlee() {
     if (busy) return;

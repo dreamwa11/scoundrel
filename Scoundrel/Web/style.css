@@ -163,7 +163,27 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .hero, .wstack > .card, .room .card { transition: box-shadow .2s ease, opacity .2s ease; }
 #hero.drop-target, #weaponSlot.drop-target .wstack > .card:first-child, .room .card.drop-target { box-shadow: 0 0 0 1px rgba(255, 210, 140, .25), 0 0 10px 1px rgba(255, 190, 100, .22); }
 #hero.drop-hover, #weaponSlot.drop-hover .wstack > .card:first-child, .room .card.drop-hover { box-shadow: 0 0 0 1px rgba(255, 210, 140, .5), 0 0 14px 3px rgba(255, 190, 100, .38); }
-#weaponSlot.drop-off .wstack, .room .card.drop-off { opacity: .55; }
+#weaponSlot.drop-off .wstack, .room .card.drop-off { opacity: .4; }
+.drop-no, #weaponSlot.drop-no .wstack { opacity: .28; transition: opacity .18s ease; }
+#weaponSlot.drop-no { opacity: 1; }
+.room .card.struck { animation: struck .32s ease-out; }
+@keyframes struck {
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-5px,2px); box-shadow: inset 0 0 0 999px rgba(200,30,20,.35); }
+  45% { transform: translate(4px,-2px); }
+  70% { transform: translate(-2px,1px); box-shadow: inset 0 0 0 999px rgba(200,30,20,.15); }
+  100% { transform: translate(0,0); }
+}
+.room .card.vanish { opacity: 0 !important; transform: scale(.85); transition: opacity .3s ease, transform .3s ease; }
+.slash {
+  position: fixed; z-index: 95; height: 4px; pointer-events: none; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), #fff 40%, #ffe2b0 60%, rgba(255,255,255,0));
+  box-shadow: 0 0 10px 2px rgba(255, 200, 120, .7);
+  transform: translate(-50%, -50%) rotate(-38deg) scaleX(0); animation: slash .42s ease-out forwards;
+}
+@keyframes slash { 0% { transform: translate(-50%,-50%) rotate(-38deg) scaleX(0); opacity: 1; } 45% { transform: translate(-50%,-50%) rotate(-38deg) scaleX(1); opacity: 1; } 100% { transform: translate(-50%,-50%) rotate(-38deg) scaleX(1.05); opacity: 0; } }
+.wstack .slain.pop-in { animation: popin .35s cubic-bezier(.3,1.4,.5,1); }
+@keyframes popin { from { opacity: 0; scale: 1.4; } to { opacity: 1; scale: 1; } }
 #weaponSlot.drop-bad .wstack > .card:first-child, .room .card.drop-bad { box-shadow: 0 0 0 1px rgba(255, 90, 70, .5), 0 0 14px 3px rgba(255, 60, 40, .35); }
 .wstack > .card.grab { touch-action: none; cursor: grab; }
 .room .card:active { transform: scale(.95); }
