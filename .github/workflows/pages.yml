@@ -1,0 +1,33 @@
+name: Publish web version to GitHub Pages
+
+# Turn on once: repo Settings -> Pages -> Source: "GitHub Actions".
+# Free GitHub accounts can only use Pages on public repositories.
+on:
+  push:
+    branches: [main]
+    paths: ["Scoundrel/Web/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: Scoundrel/Web
+      - id: deployment
+        uses: actions/deploy-pages@v4

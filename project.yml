@@ -1,0 +1,45 @@
+name: Scoundrel
+options:
+  bundleIdPrefix: com.dreamwa11
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Scoundrel:
+    type: application
+    platform: iOS
+    sources:
+      - path: Scoundrel
+        excludes:
+          - "Web/**"
+      - path: Scoundrel/Web
+        type: folder
+        buildPhase: resources
+    info:
+      path: Support/Info.plist
+      properties:
+        CFBundleDisplayName: Scoundrel
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIRequiresFullScreen: true
+        UIStatusBarHidden: true
+        UIViewControllerBasedStatusBarAppearance: false
+        ITSAppUsesNonExemptEncryption: false
+        LSRequiresIPhoneOS: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dreamwa11.scoundrel
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: NO
+    scheme: {}

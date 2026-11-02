@@ -1,0 +1,106 @@
+name: Build Scoundrel iOS app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Always runs. Produces an unsigned Scoundrel.ipa you can sideload
+  # with Sideloadly or AltStore (they sign it with your Apple ID).
+  unsigned-ipa:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build (unsigned)
+        run: |
+          xcodebuild \
+            -project Scoundrel.xcodeproj \
+            -scheme Scoundrel \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/Scoundrel.app Payload/
+          zip -qry Scoundrel.ipa Payload
+          ls -lh Scoundrel.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Scoundrel-unsigned-ipa
+          path: Scoundrel.ipa
+          retention-days: 30
+
+  # Optional. Runs only when the App Store Connect secrets below exist
+  # (needs a paid Apple Developer account). Uploads a build to TestFlight.
+  testflight:
+    runs-on: macos-15
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - name: Check secrets
+        id: check
+        run: |
+          if [ -n "$ASC_KEY_ID" ] && [ -n "$ASC_ISSUER_ID" ] && [ -n "$ASC_KEY_P8" ] && [ -n "$TEAM_ID" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "TestFlight secrets not set - skipping."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.enabled == 'true'
+
+      - name: Install XcodeGen and generate project
+        if: steps.check.outputs.enabled == 'true'
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Archive and upload to TestFlight
+        if: steps.check.outputs.enabled == 'true'
+        run: |
+          mkdir -p ~/private_keys
+          echo "$ASC_KEY_P8" > ~/private_keys/AuthKey_$ASC_KEY_ID.p8
+          KEY=~/private_keys/AuthKey_$ASC_KEY_ID.p8
+          BUILD_NUMBER=${{ github.run_number }}
+
+          xcodebuild archive \
+            -project Scoundrel.xcodeproj -scheme Scoundrel -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/Scoundrel.xcarchive \
+            DEVELOPMENT_TEAM=$TEAM_ID CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION=$BUILD_NUMBER \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+          </dict></plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/Scoundrel.xcarchive -exportPath build/export \
+            -exportOptionsPlist ExportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"

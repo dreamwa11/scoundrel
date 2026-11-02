@@ -1,0 +1,14 @@
+{
+  "name": "Scoundrel",
+  "short_name": "Scoundrel",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0908",
+  "theme_color": "#0b0908",
+  "icons": [
+    { "src": "assets/ui/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "assets/ui/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0908">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Scoundrel">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/ui/icon-180.png">
+<title>Scoundrel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div id="app">
+  <div class="bg" id="bgA"></div>
+  <div class="bg" id="bgB"></div>
+  <div class="shade"></div>
+  <div class="hurt" id="hurt"></div>
+
+  <header class="topbar">
+    <div class="deckinfo" id="deckinfo"></div>
+    <div class="roomtitle" id="roomtitle">Room 1</div>
+    <button class="iconbtn" id="menuBtn" aria-label="Menu"></button>
+  </header>
+
+  <section class="scene" id="scene"></section>
+
+  <section class="table">
+    <div class="trim"></div>
+    <div class="room" id="room"></div>
+  </section>
+
+  <div class="message" id="message"></div>
+
+  <section class="panel">
+    <div class="slot" id="deckSlot"></div>
+    <div class="slot" id="heroSlot"></div>
+    <div class="slot" id="weaponSlot"></div>
+  </section>
+
+  <nav class="actions">
+    <button class="btn" id="newBtn"></button>
+    <button class="btn primary" id="fleeBtn"></button>
+  </nav>
+</div>
+
+<!-- menu -->
+<div class="overlay" id="menu" hidden>
+  <div class="sheet">
+    <h2>Scoundrel</h2>
+    <button class="btn wide" data-act="new"></button>
+    <button class="btn wide" data-act="rules"></button>
+    <button class="btn wide" data-act="settings"></button>
+    <button class="btn wide ghost" data-act="close">Back to the dungeon</button>
+    <p class="credit">Original game by Zach Gage and Kurt Bieg, © 2011</p>
+  </div>
+</div>
+
+<!-- rules -->
+<div class="overlay" id="rules" hidden>
+  <div class="sheet scroll">
+    <h2>How to play</h2>
+    <div class="rules-body">
+      <p class="lead">You are a scoundrel delving into a dungeon built from a deck of 44 cards. Clear every card while staying alive.</p>
+
+      <h3>The cards</h3>
+      <div class="rule-row"><span class="chip skull"></span><p><b>Monsters</b> are clubs and spades, 2 to Ace. Their number is the damage they deal. J = 11, Q = 12, K = 13, A = 14.</p></div>
+      <div class="rule-row"><span class="chip sword"></span><p><b>Weapons</b> are diamonds, 2 to 10. Picking one up equips it and throws away your old weapon along with its kills.</p></div>
+      <div class="rule-row"><span class="chip heart"></span><p><b>Potions</b> are hearts, 2 to 10. They heal that much, up to your maximum HP (20 unless changed in Settings).</p></div>
+
+      <h3>Rooms</h3>
+      <p>Each room shows 4 cards. Tap cards one at a time to deal with them. Once you've handled 3, the room refills to 4 from the deck. The card you left behind stays.</p>
+
+      <h3>Fighting</h3>
+      <p>Under each monster you see two options:</p>
+      <ul>
+        <li><b>Fist</b>: fight bare-handed and take the monster's full value as damage.</li>
+        <li><b>Sword</b>: fight with your weapon and take only the monster's value minus the weapon's value. The monster ends up on your weapon's stack.</li>
+      </ul>
+      <p>Weapons dull: once a weapon has a kill, it can only hit monsters <b>equal to or weaker than its last kill</b>. The badge on your weapon shows that limit. Tapping the card itself picks the sword when it can hit, and fists otherwise.</p>
+
+      <h3>Potions</h3>
+      <p>You can drink only one potion per room. A second potion in the same room is wasted.</p>
+
+      <h3>Fleeing</h3>
+      <p>Before touching a full room, you may flee. All 4 cards go to the bottom of the deck and you get a fresh room. You can't flee two rooms in a row.</p>
+
+      <h3>Scoring</h3>
+      <p><b>Survive</b> by clearing the whole deck. Your score is your remaining HP. If you're at full health and your last move was drinking a potion, its value is added on top.</p>
+      <p><b>Die</b> when HP hits 0. Your score is your HP minus the value of every monster still in the dungeon.</p>
+
+      <h3>Tips</h3>
+      <ul>
+        <li>Kill big monsters with your weapon first. Small kills dull it fast.</li>
+        <li>Sometimes fists are smarter, to save your weapon for a bigger threat.</li>
+        <li>Count what's left: the top bar shows cards and monsters remaining.</li>
+      </ul>
+    </div>
+    <button class="btn wide primary" data-act="close">Into the dungeon</button>
+  </div>
+</div>
+
+<!-- settings -->
+<div class="overlay" id="settings" hidden>
+  <div class="sheet">
+    <h2>Settings</h2>
+    <label class="field">Maximum health
+      <div class="stepper">
+        <button class="btn small" data-step="-1">−</button>
+        <output id="hpOut">20</output>
+        <button class="btn small" data-step="1">+</button>
+      </div>
+    </label>
+    <label class="field toggle">Haptics
+      <input type="checkbox" id="hapticsToggle" checked>
+    </label>
+    <p class="note" id="settingsNote">Changing maximum health starts a new dungeon.</p>
+    <button class="btn wide primary" data-act="save">Save</button>
+    <button class="btn wide ghost" data-act="close">Cancel</button>
+  </div>
+</div>
+
+<!-- confirm -->
+<div class="overlay" id="confirm" hidden>
+  <div class="sheet">
+    <h2>Abandon this dungeon?</h2>
+    <p class="note">Your current run will be lost.</p>
+    <button class="btn wide primary" data-act="yes">Find another dungeon</button>
+    <button class="btn wide ghost" data-act="close">Keep playing</button>
+  </div>
+</div>
+
+<!-- game over -->
+<div class="overlay end" id="gameover" hidden>
+  <div class="endbg" id="endbg"></div>
+  <div class="endcard">
+    <h1 id="endTitle">You Survived!</h1>
+    <div class="score"><span>Score</span><b id="endScore">0</b></div>
+    <p class="note" id="endNote"></p>
+    <button class="btn wide primary" data-act="again">Start another dungeon</button>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script src="art.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
