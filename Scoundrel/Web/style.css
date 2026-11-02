@@ -54,9 +54,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   mix-blend-mode: screen; will-change: transform;
 }
 .fog.on { opacity: 1; animation: fogbreathe 11s ease-in-out infinite alternate; }
-@keyframes fogbreathe { from { opacity: 1; } to { opacity: .55; } }
-.fog .f1 { opacity: var(--fog1, .15); animation: fogdrift 55s linear infinite; animation-delay: var(--fogd1, 0s); }
-.fog .f2 { opacity: var(--fog2, .1); top: 12%; transform: scaleY(-1); animation: fogdrift2 38s linear infinite; animation-delay: var(--fogd2, 0s); }
+@keyframes fogbreathe { from { opacity: 1; } to { opacity: .7; } }
+.fog .f1 { opacity: var(--fog1, .15); animation: fogdrift 30s linear infinite; animation-delay: var(--fogd1, 0s); }
+.fog .f2 { opacity: var(--fog2, .1); top: 12%; transform: scaleY(-1); animation: fogdrift2 22s linear infinite; animation-delay: var(--fogd2, 0s); }
 @keyframes fogdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes fogdrift2 { from { transform: translateX(-50%) scaleY(-1); } to { transform: translateX(0) scaleY(-1); } }
 @media (prefers-reduced-motion: reduce) { .fog i, .fog.on { animation: none; } }

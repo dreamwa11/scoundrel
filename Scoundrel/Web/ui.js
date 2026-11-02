@@ -87,19 +87,18 @@
     '</svg>';
 
   /* ---------- background ---------- */
-  // new random fog drift for each room
+  // fog: one random start for the whole session
   function randomFog() {
     var f = $('fog'); if (!f) return;
-    f.style.setProperty('--fog1', (0.11 + Math.random() * 0.09).toFixed(2));
-    f.style.setProperty('--fog2', (0.06 + Math.random() * 0.07).toFixed(2));
-    f.style.setProperty('--fogd1', (-Math.random() * 55).toFixed(1) + 's');
-    f.style.setProperty('--fogd2', (-Math.random() * 38).toFixed(1) + 's');
+    f.style.setProperty('--fog1', (0.24 + Math.random() * 0.04).toFixed(2));
+    f.style.setProperty('--fog2', (0.16 + Math.random() * 0.04).toFixed(2));
+    f.style.setProperty('--fogd1', (-Math.random() * 30).toFixed(1) + 's');
+    f.style.setProperty('--fogd2', (-Math.random() * 22).toFixed(1) + 's');
   }
 
   function setBg(url) {
     if (url === currentBg) return;
     currentBg = url;
-    randomFog();
     var front = $('bg' + bgFront), back = $('bg' + (bgFront === 'A' ? 'B' : 'A'));
     bgFront = bgFront === 'A' ? 'B' : 'A';
     // swap only once the picture is loaded, then let the fog in
@@ -471,6 +470,7 @@
   function boot() {
     wire();
     preloadImages();
+    randomFog();
     startSparks();
     var resumed = load();
     if (!resumed) state = S.newGame(settings.maxHp);
