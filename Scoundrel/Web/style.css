@@ -44,7 +44,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 #bgB { opacity: 0; }
 .fog {
   position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .78); z-index: -1;
-  overflow: hidden; pointer-events: none; transition: opacity 1.4s ease;
+  overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 2s ease;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 55%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 55%, transparent 100%);
 }
@@ -53,11 +53,13 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   background: url('assets/ui/fog.svg') repeat-x 0 0 / 50% 100%;
   mix-blend-mode: screen; will-change: transform;
 }
-.fog .f1 { opacity: var(--fog1, .22); animation: fogdrift 140s linear infinite; animation-delay: var(--fogd1, 0s); }
-.fog .f2 { opacity: var(--fog2, .14); top: 12%; transform: scaleY(-1); animation: fogdrift2 95s linear infinite; animation-delay: var(--fogd2, 0s); }
+.fog.on { opacity: 1; animation: fogbreathe 11s ease-in-out infinite alternate; }
+@keyframes fogbreathe { from { opacity: 1; } to { opacity: .55; } }
+.fog .f1 { opacity: var(--fog1, .15); animation: fogdrift 55s linear infinite; animation-delay: var(--fogd1, 0s); }
+.fog .f2 { opacity: var(--fog2, .1); top: 12%; transform: scaleY(-1); animation: fogdrift2 38s linear infinite; animation-delay: var(--fogd2, 0s); }
 @keyframes fogdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes fogdrift2 { from { transform: translateX(-50%) scaleY(-1); } to { transform: translateX(0) scaleY(-1); } }
-@media (prefers-reduced-motion: reduce) { .fog i { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .fog i, .fog.on { animation: none; } }
 .shade {
   position: absolute; inset: 0 0 auto 0; height: var(--bgh, 100%); z-index: -2; pointer-events: none;
   background:

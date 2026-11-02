@@ -90,10 +90,10 @@
   // new random fog drift for each room
   function randomFog() {
     var f = $('fog'); if (!f) return;
-    f.style.setProperty('--fog1', (0.22 + Math.random() * 0.16).toFixed(2));
-    f.style.setProperty('--fog2', (0.14 + Math.random() * 0.12).toFixed(2));
-    f.style.setProperty('--fogd1', (-Math.random() * 140).toFixed(1) + 's');
-    f.style.setProperty('--fogd2', (-Math.random() * 95).toFixed(1) + 's');
+    f.style.setProperty('--fog1', (0.11 + Math.random() * 0.09).toFixed(2));
+    f.style.setProperty('--fog2', (0.06 + Math.random() * 0.07).toFixed(2));
+    f.style.setProperty('--fogd1', (-Math.random() * 55).toFixed(1) + 's');
+    f.style.setProperty('--fogd2', (-Math.random() * 38).toFixed(1) + 's');
   }
 
   function setBg(url) {
@@ -101,9 +101,16 @@
     currentBg = url;
     randomFog();
     var front = $('bg' + bgFront), back = $('bg' + (bgFront === 'A' ? 'B' : 'A'));
-    back.style.backgroundImage = 'url(' + url + ')';
-    back.style.opacity = 1; front.style.opacity = 0;
     bgFront = bgFront === 'A' ? 'B' : 'A';
+    // swap only once the picture is loaded, then let the fog in
+    var img = new Image();
+    img.onload = img.onerror = function () {
+      if (currentBg !== url) return;
+      back.style.backgroundImage = 'url(' + url + ')';
+      back.style.opacity = 1; front.style.opacity = 0;
+      var f = $('fog'); if (f) f.classList.add('on');
+    };
+    img.src = url;
   }
   function bgForState() {
     if (state.deck.length === 0) return EXIT_BG;
