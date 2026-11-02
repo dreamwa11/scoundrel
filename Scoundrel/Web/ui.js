@@ -189,57 +189,72 @@
   }
   /* ---------- drag & drop ---------- */
   var dragJustEnded = false;
-  function dropZones(card) {
-    var z = [];
-    var hero = $('hero'), weap = $('weaponSlot');
+  function roomIndex(id) { var i = -1; state.room.forEach(function (x, k) { if (x.id === id) i = k; }); return i; }
+  function hit(el, x, y, pad) {
+    var r = el.getBoundingClientRect();
+    return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad;
+  }
+  // zones a room card can be dropped on
+  function roomCardZones(card) {
+    var z = [], hero = $('hero'), weap = $('weaponSlot');
     if (card.type === 'monster') {
       if (hero) z.push({ el: hero, mode: 'fist' });
       if (weap && state.weapon) z.push({ el: weap, mode: 'weapon', ok: S.weaponCanHit(state, card) });
     } else if (card.type === 'weapon') {
       if (weap) z.push({ el: weap, mode: 'auto' });
-    } else {
-      if (hero) z.push({ el: hero, mode: 'auto' });
-    }
+    } else if (hero) z.push({ el: hero, mode: 'auto' });
     return z;
   }
-  function zoneAt(zones, x, y) {
-    for (var k = 0; k < zones.length; k++) {
-      var r = zones[k].el.getBoundingClientRect(), pad = 18;
-      if (x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad) return zones[k];
-    }
-    return null;
+  // zones the equipped weapon can be dropped on: monsters in the room
+  function weaponZones() {
+    var z = [];
+    state.room.forEach(function (c) {
+      if (c.type !== 'monster') return;
+      var cell = $('room').querySelector('.cell[data-id="' + c.id + '"] .card');
+      if (cell) z.push({ el: cell, id: c.id, mode: 'weapon', ok: S.weaponCanHit(state, c), card: c });
+    });
+    return z;
   }
-  function attachDrag(c, card) {
-    c.addEventListener('pointerdown', function (e) {
+  function dullMsg(card) {
+    state.message = 'Your weapon is too dull for the ' + S.monsterName(card) + ' (it only hits ' + state.weapon.last + ' or lower).';
+    renderMessage(true); haptic('warning');
+  }
+
+  // generic drag: el = the card element, getZones() -> [{el, ok}], onDrop(zone, ghost) -> true if handled
+  function makeDraggable(el, getZones, onDrop) {
+    el.addEventListener('pointerdown', function (e) {
       if (busy || state.over || (e.button && e.button !== 0)) return;
-      var pid = e.pointerId, sx = e.clientX, sy = e.clientY;
-      var r0 = c.getBoundingClientRect(), offX = sx - r0.left, offY = sy - r0.top;
-      var ghost = null, zones = null, over = null;
-      function place(x, y) {
-        ghost.style.transform = 'translate(' + (x - offX) + 'px,' + (y - offY) + 'px) rotate(' + ((x - sx) / 40).toFixed(1) + 'deg) scale(1.08)';
-      }
-      function setOver(z) {
-        if (over === z) return;
-        if (over) over.el.classList.remove('drop-hover', 'drop-bad');
-        over = z;
-        if (over) { over.el.classList.add(over.ok === false ? 'drop-bad' : 'drop-hover'); haptic('tap'); }
+      var pid = e.pointerId, sx = e.clientX, sy = e.clientY, px = sx, py = sy;
+      var r0 = el.getBoundingClientRect(), offX = sx - r0.left, offY = sy - r0.top;
+      var ghost = null, zones = null, over = null, raf = 0;
+      function frame() {
+        raf = 0;
+        ghost.style.transform = 'translate3d(' + (px - offX) + 'px,' + (py - offY) + 'px,0) rotate(' + Math.max(-8, Math.min(8, (px - sx) / 40)).toFixed(1) + 'deg)';
+        var z = null;
+        for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, px, py, 16)) { z = zones[k]; break; }
+        if (z !== over) {
+          if (over) over.el.classList.remove('drop-hover', 'drop-bad');
+          over = z;
+          if (over) { over.el.classList.add(over.ok === false ? 'drop-bad' : 'drop-hover'); haptic('tap'); }
+        }
       }
       function move(ev) {
         if (ev.pointerId !== pid) return;
+        px = ev.clientX; py = ev.clientY;
         if (!ghost) {
-          if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 10) return;
-          ghost = c.cloneNode(true);
-          ghost.classList.remove('deal'); ghost.classList.add('drag');
+          if (Math.abs(px - sx) + Math.abs(py - sy) < 10) return;
+          ghost = el.cloneNode(true);
+          ghost.classList.remove('deal', 'slain'); ghost.classList.add('drag');
+          ghost.removeAttribute('style');
           ghost.style.width = r0.width + 'px'; ghost.style.height = r0.height + 'px';
           document.body.appendChild(ghost);
-          c.style.visibility = 'hidden';
-          zones = dropZones(card);
+          el.style.visibility = 'hidden';
+          zones = getZones();
           zones.forEach(function (z) { z.el.classList.add(z.ok === false ? 'drop-off' : 'drop-target'); });
           haptic('tap');
         }
         if (ev.cancelable) ev.preventDefault();
-        place(ev.clientX, ev.clientY);
-        setOver(zoneAt(zones, ev.clientX, ev.clientY));
+        if (!raf) raf = requestAnimationFrame(frame);
       }
       function end(ev) {
         if (ev.pointerId !== pid) return;
@@ -247,26 +262,47 @@
         window.removeEventListener('pointerup', end);
         window.removeEventListener('pointercancel', end);
         if (!ghost) return;
+        if (raf) { cancelAnimationFrame(raf); raf = 0; }
         dragJustEnded = true; setTimeout(function () { dragJustEnded = false; }, 60);
-        var z = ev.type === 'pointerup' ? zoneAt(zones, ev.clientX, ev.clientY) : null;
+        var z = null;
+        if (ev.type === 'pointerup') for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, ev.clientX, ev.clientY, 16)) { z = zones[k]; break; }
         zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad'); });
-        var i = -1; state.room.forEach(function (x, k) { if (x.id === card.id) i = k; });
-        if (z && z.ok !== false && i !== -1) {
-          act(i, z.mode, ghost);
-          return;
-        }
-        if (z && z.ok === false) {
-          state.message = 'Your weapon is too dull for the ' + S.monsterName(card) + ' (it only hits ' + state.weapon.last + ' or lower).';
-          renderMessage(true); haptic('warning');
-        }
+        if (z && z.ok !== false && onDrop(z, ghost)) return;
+        if (z && z.ok === false && z.card) dullMsg(z.card);
         // snap back
-        ghost.style.transition = 'transform .25s ease';
-        ghost.style.transform = 'translate(' + r0.left + 'px,' + r0.top + 'px) rotate(0deg) scale(1)';
-        setTimeout(function () { ghost.remove(); c.style.visibility = ''; }, 260);
+        ghost.style.transition = 'transform .22s ease';
+        ghost.style.transform = 'translate3d(' + r0.left + 'px,' + r0.top + 'px,0)';
+        setTimeout(function () { ghost.remove(); el.style.visibility = ''; }, 240);
       }
       window.addEventListener('pointermove', move, { passive: false });
       window.addEventListener('pointerup', end);
       window.addEventListener('pointercancel', end);
+    });
+  }
+
+  function attachDrag(c, card) {
+    makeDraggable(c, function () {
+      var z = roomCardZones(card);
+      z.forEach(function (q) { if (q.ok === false) q.card = card; });
+      return z;
+    }, function (z, ghost) {
+      var i = roomIndex(card.id);
+      if (i === -1) return false;
+      act(i, z.mode, ghost);
+      return true;
+    });
+  }
+
+  function attachWeaponDrag() {
+    var wc = state.weapon && $('wstack') && $('wstack').querySelector('.card:not(.slain)');
+    if (!wc) return;
+    wc.classList.add('grab');
+    makeDraggable(wc, weaponZones, function (z, ghost) {
+      var i = roomIndex(z.id);
+      if (i === -1) return false;
+      ghost.remove(); wc.style.visibility = '';
+      act(i, 'weapon');
+      return true;
     });
   }
 
@@ -286,7 +322,7 @@
 
   function renderHero() {
     var pct = Math.max(0, state.hp) / state.maxHp * 100;
-    $('heroSlot').innerHTML = '<div class="hero' + (state.hp <= Math.max(5, state.maxHp * 0.25) ? ' low' : '') + '" id="hero"><div class="portrait"></div>' +
+    $('heroSlot').innerHTML = '<div class="hero' + (state.hp <= Math.max(5, state.maxHp * 0.25) ? ' low' : '') + '" id="hero"><div class="portrait"></div><div class="hmist"><i></i></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="hp">' + Math.max(0, state.hp) + '<small>/' + state.maxHp + '</small></div></div>' +
       '<div class="label">Health</div>';
@@ -305,6 +341,7 @@
     }
     html += '</div>' + (w && w.last !== null ? '<div class="label hits">Hits ≤ ' + w.last + '</div>' : '<div class="label">Weapon</div>');
     $('weaponSlot').innerHTML = html;
+    attachWeaponDrag();
   }
 
   function renderMessage(flash) {

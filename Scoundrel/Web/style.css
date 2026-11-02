@@ -40,7 +40,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 }
 
 /* backgrounds */
-.bg { position: absolute; inset: 0 0 auto 0; height: var(--bgh, 100%); background: #0b0908 center 62% / cover no-repeat; transition: opacity .9s ease; z-index: -3; }
+.bg { will-change: opacity; transform: translateZ(0); position: absolute; inset: 0 0 auto 0; height: var(--bgh, 100%); background: #0b0908 center 62% / cover no-repeat; transition: opacity .9s ease; z-index: -3; }
 #bgB { opacity: 0; }
 .fog {
   position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .78); z-index: -1;
@@ -51,14 +51,14 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .fog i {
   position: absolute; top: 0; bottom: 0; left: 0; width: 200%;
   background: url('assets/ui/fog.svg') repeat-x 0 0 / 50% 100%;
-  mix-blend-mode: screen; will-change: transform;
+  will-change: transform; backface-visibility: hidden;
 }
 .fog.on { opacity: 1; animation: fogbreathe 11s ease-in-out infinite alternate; }
 @keyframes fogbreathe { from { opacity: 1; } to { opacity: .7; } }
-.fog .f1 { opacity: var(--fog1, .15); animation: fogdrift 30s linear infinite; animation-delay: var(--fogd1, 0s); }
-.fog .f2 { opacity: var(--fog2, .1); top: 12%; transform: scaleY(-1); animation: fogdrift2 22s linear infinite; animation-delay: var(--fogd2, 0s); }
-@keyframes fogdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes fogdrift2 { from { transform: translateX(-50%) scaleY(-1); } to { transform: translateX(0) scaleY(-1); } }
+.fog .f1 { opacity: calc(var(--fog1, .15) * .8); animation: fogdrift 30s linear infinite; animation-delay: var(--fogd1, 0s); }
+.fog .f2 { opacity: calc(var(--fog2, .1) * .8); top: 12%; transform: scaleY(-1); animation: fogdrift2 22s linear infinite; animation-delay: var(--fogd2, 0s); }
+@keyframes fogdrift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+@keyframes fogdrift2 { from { transform: translate3d(-50%,0,0) scaleY(-1); } to { transform: translate3d(0,0,0) scaleY(-1); } }
 @media (prefers-reduced-motion: reduce) { .fog i, .fog.on { animation: none; } }
 .sparks { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .8); z-index: -1; overflow: hidden; pointer-events: none; }
 .spark {
@@ -157,13 +157,15 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .room .card { rotate: var(--tilt, 0deg); touch-action: none; -webkit-user-drag: none; }
 .card.drag {
   position: fixed; left: 0; top: 0; margin: 0; z-index: 90; pointer-events: none; rotate: 0deg;
-  box-shadow: 0 18px 30px rgba(0,0,0,.7); will-change: transform;
+  box-shadow: 0 14px 24px rgba(0,0,0,.6); will-change: transform; transform: translate3d(0,0,0);
 }
-.drop-target, .drop-off { transition: transform .15s ease, filter .15s ease, box-shadow .15s ease; }
-#hero.drop-target, #weaponSlot.drop-target .wstack { filter: drop-shadow(0 0 6px rgba(255, 200, 110, .55)); }
-#hero.drop-hover, #weaponSlot.drop-hover .wstack { transform: scale(1.06); filter: drop-shadow(0 0 12px rgba(255, 200, 110, .95)); }
-#weaponSlot.drop-off .wstack { opacity: .55; }
-#weaponSlot.drop-bad .wstack { filter: drop-shadow(0 0 10px rgba(255, 60, 40, .9)); }
+.card.drag::before { filter: none; }
+.hero, .wstack > .card, .room .card { transition: box-shadow .2s ease, opacity .2s ease; }
+#hero.drop-target, #weaponSlot.drop-target .wstack > .card:first-child, .room .card.drop-target { box-shadow: 0 0 0 1px rgba(255, 210, 140, .25), 0 0 10px 1px rgba(255, 190, 100, .22); }
+#hero.drop-hover, #weaponSlot.drop-hover .wstack > .card:first-child, .room .card.drop-hover { box-shadow: 0 0 0 1px rgba(255, 210, 140, .5), 0 0 14px 3px rgba(255, 190, 100, .38); }
+#weaponSlot.drop-off .wstack, .room .card.drop-off { opacity: .55; }
+#weaponSlot.drop-bad .wstack > .card:first-child, .room .card.drop-bad { box-shadow: 0 0 0 1px rgba(255, 90, 70, .5), 0 0 14px 3px rgba(255, 60, 40, .35); }
+.wstack > .card.grab { touch-action: none; cursor: grab; }
 .room .card:active { transform: scale(.95); }
 .card.dull { filter: none; }
 
@@ -223,21 +225,20 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 }
 .hero svg { position: absolute; left: 0; top: 0; width: 100%; }
 .hero .portrait { position: absolute; inset: 3px; border-radius: 7px; overflow: hidden; background: #000 url('assets/ui/hero.webp') 50% 4% / 150% auto no-repeat; }
-.hero .portrait::before {
-  content: ''; position: absolute; inset: 0; mix-blend-mode: lighten; pointer-events: none; opacity: .34;
-  background:
-    url('assets/ui/mist-loop.svg') 0 0 / 200% 100% repeat-x,
-    url('assets/ui/mist-loop.svg') 0 30% / 160% 90% repeat-x;
+.hero .hmist {
+  position: absolute; inset: 3px; border-radius: 7px; overflow: hidden; pointer-events: none;
+  opacity: .32; animation: heroglow 7s ease-in-out infinite alternate;
   -webkit-mask-image: radial-gradient(ellipse 22% 20% at 50% 27%, transparent 55%, #000 100%);
   mask-image: radial-gradient(ellipse 22% 20% at 50% 27%, transparent 55%, #000 100%);
-  animation: heromist 24s linear infinite, heroglow 7s ease-in-out infinite alternate;
 }
-@keyframes heromist {
-  from { background-position: 0 0, 0 30%; }
-  to   { background-position: -200% 0, 266.667% 30%; }
+.hero .hmist i {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 400%;
+  background: url('assets/ui/mist-loop.svg') repeat-x 0 0 / 50% 100%;
+  will-change: transform; animation: heromist 26s linear infinite;
 }
-@keyframes heroglow { from { opacity: .26; } to { opacity: .42; } }
-@media (prefers-reduced-motion: reduce) { .hero .portrait::before { animation: none; } }
+@keyframes heromist { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+@keyframes heroglow { from { opacity: .24; } to { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .hero .hmist, .hero .hmist i { animation: none; } }
 .hero .portrait::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 72%, rgba(0,0,0,.9) 100%); }
 .hero .hp { z-index: 2; }
 .hero .hp {
@@ -255,7 +256,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* weapon slot */
 .wstack { position: relative; width: calc(var(--cw) + 30px); height: var(--ch); }
 .wstack .card { position: absolute; top: 0; left: 0; }
-.wstack .slain { transform-origin: 40% 100%; }
+.wstack .slain { transform-origin: 40% 100%; pointer-events: none; }
 .slot .label { position: relative; z-index: 40; }
 .badge {
   position: absolute; z-index: 30; right: -2px; bottom: -6px;
