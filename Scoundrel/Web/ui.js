@@ -87,9 +87,19 @@
     '</svg>';
 
   /* ---------- background ---------- */
+  // new random fog drift for each room
+  function randomFog() {
+    var f = $('fog'); if (!f) return;
+    f.style.setProperty('--fog1', (0.22 + Math.random() * 0.16).toFixed(2));
+    f.style.setProperty('--fog2', (0.14 + Math.random() * 0.12).toFixed(2));
+    f.style.setProperty('--fogd1', (-Math.random() * 140).toFixed(1) + 's');
+    f.style.setProperty('--fogd2', (-Math.random() * 95).toFixed(1) + 's');
+  }
+
   function setBg(url) {
     if (url === currentBg) return;
     currentBg = url;
+    randomFog();
     var front = $('bg' + bgFront), back = $('bg' + (bgFront === 'A' ? 'B' : 'A'));
     back.style.backgroundImage = 'url(' + url + ')';
     back.style.opacity = 1; front.style.opacity = 0;

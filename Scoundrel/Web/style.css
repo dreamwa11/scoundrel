@@ -42,6 +42,22 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* backgrounds */
 .bg { position: absolute; inset: 0 0 auto 0; height: var(--bgh, 100%); background: #0b0908 center 62% / cover no-repeat; transition: opacity .9s ease; z-index: -3; }
 #bgB { opacity: 0; }
+.fog {
+  position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .78); z-index: -1;
+  overflow: hidden; pointer-events: none; transition: opacity 1.4s ease;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 55%, transparent 100%);
+}
+.fog i {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 200%;
+  background: url('assets/ui/fog.svg') repeat-x 0 0 / 50% 100%;
+  mix-blend-mode: screen; will-change: transform;
+}
+.fog .f1 { opacity: var(--fog1, .22); animation: fogdrift 140s linear infinite; animation-delay: var(--fogd1, 0s); }
+.fog .f2 { opacity: var(--fog2, .14); top: 12%; transform: scaleY(-1); animation: fogdrift2 95s linear infinite; animation-delay: var(--fogd2, 0s); }
+@keyframes fogdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes fogdrift2 { from { transform: translateX(-50%) scaleY(-1); } to { transform: translateX(0) scaleY(-1); } }
+@media (prefers-reduced-motion: reduce) { .fog i { animation: none; } }
 .shade {
   position: absolute; inset: 0 0 auto 0; height: var(--bgh, 100%); z-index: -2; pointer-events: none;
   background:
@@ -62,7 +78,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* top bar */
 .topbar {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  padding: 10px 14px 0; min-height: 48px;
+  padding: 25px 14px 0; min-height: 48px;
 }
 .deckinfo { font-size: 15px; font-weight: 600; color: var(--ink); text-shadow: 0 1px 1px #000; white-space: nowrap; }
 .deckinfo .icon { margin-right: 4px; }
@@ -182,7 +198,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   box-shadow: 0 8px 16px rgba(0,0,0,.6), inset 0 0 0 2px #000;
 }
 .hero svg { position: absolute; left: 0; top: 0; width: 100%; }
-.hero .portrait { position: absolute; inset: 0; background: #000 url('assets/ui/hero.webp') 50% 4% / 150% auto no-repeat; }
+.hero .portrait { position: absolute; inset: 3px; border-radius: 7px; overflow: hidden; background: #000 url('assets/ui/hero.webp') 50% 4% / 150% auto no-repeat; }
 .hero .portrait::before {
   content: ''; position: absolute; inset: 0; mix-blend-mode: lighten; pointer-events: none; opacity: .55;
   background: url('assets/ui/mist.svg') center / 100% 100% no-repeat;
