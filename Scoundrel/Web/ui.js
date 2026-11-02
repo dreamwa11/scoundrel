@@ -135,11 +135,11 @@
     });
   }
 
-  // subtle, random-looking but stable tilt per card (-2.5° to 2.5°)
+  // subtle, random-looking but stable tilt per card (-1.2° to 1.2°)
   var tiltSeed = Math.floor(Math.random() * 1000);
   function tiltFor(id) {
     var x = Math.sin((id + 1) * 12.9898 + tiltSeed * 78.233) * 43758.5453;
-    return ((x - Math.floor(x)) * 5 - 2.5).toFixed(2);
+    return ((x - Math.floor(x)) * 2.4 - 1.2).toFixed(2);
   }
 
   function renderRoom(newIds) {

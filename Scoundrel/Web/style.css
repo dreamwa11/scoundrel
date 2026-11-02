@@ -86,7 +86,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* cards */
 .card {
   position: relative; width: var(--cw); height: var(--ch);
-  border-radius: 9px; border: 2px solid #f4efe4;
+  border-radius: 9px; border: 0; --edge: #f4efe4;
   background:
     radial-gradient(ellipse at 50% 55%, #23211f 0%, #0d0c0b 70%);
   box-shadow: 0 6px 12px rgba(0,0,0,.55), inset 0 0 0 2px #000;
@@ -100,7 +100,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 }
 .card .art { position: absolute; left: 4%; right: 4%; top: 18%; width: 92%; height: auto; }
 .card .art.photo {
-  left: 0; right: 0; top: 10%; width: 100%; height: auto; mix-blend-mode: lighten;
+  left: 0; right: 0; top: 17%; width: 100%; height: auto; mix-blend-mode: lighten;
   -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
   mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
   pointer-events: none; -webkit-user-drag: none;
@@ -114,12 +114,19 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .card .val.face { font-family: 'SpaceGrotesk', sans-serif; font-weight: 700; font-size: calc(var(--cw) * .27); top: 4px; }
 .card.potion .val, .card.potion .corner { color: #ff5a4f; }
 .card.weapon .val, .card.weapon .corner { color: var(--gold); }
-.card.monster.royal { border-color: var(--gold); }
+.card.monster.royal { --edge: var(--gold); }
+/* hand-drawn wobbly outline */
+.card::before, .hero::before {
+  content: ''; position: absolute; inset: 1.5px; z-index: 20; pointer-events: none;
+  border: 2.5px solid var(--edge); border-radius: 8px; filter: url(#wobble);
+}
+.card.empty::before { display: none; }
+.wstack > .card:first-child { rotate: -3deg; }
 .room .card { rotate: var(--tilt, 0deg); }
 .room .card:active { transform: scale(.95); }
 .card.dull { filter: none; }
 
-.card.back { background: #0b0a09 url('assets/ui/cardback.svg') center / 100% 100% no-repeat; border-color: #f4efe4; }
+.card.back { background: #0b0a09 url('assets/ui/cardback.svg') center / 100% 100% no-repeat; }
 .card.back::after { display: none; }
 .card.empty { background: rgba(0,0,0,.25); border: 2px dashed rgba(236,230,214,.25); box-shadow: none; display: grid; place-items: center; color: rgba(236,230,214,.35); font-size: 11px; text-align: center; padding: 6px; }
 .card.empty::after { display: none; }
@@ -169,7 +176,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* hero */
 .hero {
   position: relative; width: calc(var(--cw) * 1.12); height: calc(var(--ch) * 1.12);
-  border-radius: 10px; border: 2px solid #5e1110; overflow: hidden;
+  border-radius: 10px; border: 0; --edge: #5e1110; overflow: hidden;
   background: radial-gradient(ellipse at 50% 42%, #3a2216, #120c09 62%, #070505 100%);
   box-shadow: 0 8px 16px rgba(0,0,0,.6), inset 0 0 0 2px #000;
 }

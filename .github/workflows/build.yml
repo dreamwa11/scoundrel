@@ -9,7 +9,7 @@ jobs:
   # Always runs. Produces an unsigned Scoundrel.ipa you can sideload
   # with Sideloadly or AltStore (they sign it with your Apple ID).
   unsigned-ipa:
-    runs-on: macos-15
+    runs-on: macos-14
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
