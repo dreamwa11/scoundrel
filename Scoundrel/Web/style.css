@@ -60,6 +60,19 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 @keyframes fogdrift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes fogdrift2 { from { transform: translateX(-50%) scaleY(-1); } to { transform: translateX(0) scaleY(-1); } }
 @media (prefers-reduced-motion: reduce) { .fog i, .fog.on { animation: none; } }
+.sparks { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .8); z-index: -1; overflow: hidden; pointer-events: none; }
+.spark {
+  position: absolute; width: var(--s, 2px); height: var(--s, 2px); border-radius: 50%;
+  background: #ffcf7a; box-shadow: 0 0 4px 1px rgba(255, 140, 40, .8), 0 0 10px 2px rgba(255, 90, 20, .35);
+  opacity: 0; animation: spark var(--t, 6s) ease-out forwards;
+}
+@keyframes spark {
+  0%   { opacity: 0; transform: translate(0, 0); }
+  12%  { opacity: var(--o, .5); }
+  50%  { transform: translate(var(--dx1, 8px), calc(var(--rise, 120px) * -.5)); }
+  80%  { opacity: calc(var(--o, .5) * .6); }
+  100% { opacity: 0; transform: translate(var(--dx2, -6px), calc(var(--rise, 120px) * -1)); }
+}
 .shade {
   position: absolute; inset: 0 0 auto 0; height: var(--bgh, 100%); z-index: -2; pointer-events: none;
   background:

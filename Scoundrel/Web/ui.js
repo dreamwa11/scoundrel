@@ -436,6 +436,33 @@
     });
   }
 
+  /* ---------- ember sparks (sparse, dim) ---------- */
+  function startSparks() {
+    var box = $('sparks');
+    if (!box) return;
+    try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+    function r(a, b) { return a + Math.random() * (b - a); }
+    function one() {
+      if (!document.hidden && box.childElementCount < 6) {
+        var s = document.createElement('i');
+        s.className = 'spark';
+        var h = box.clientHeight || 300;
+        s.style.left = r(4, 96).toFixed(1) + '%';
+        s.style.top = (h * r(.35, .9)).toFixed(0) + 'px';
+        s.style.setProperty('--s', r(1.4, 2.8).toFixed(1) + 'px');
+        s.style.setProperty('--o', r(.25, .55).toFixed(2));
+        s.style.setProperty('--t', r(4, 8).toFixed(1) + 's');
+        s.style.setProperty('--rise', r(70, 170).toFixed(0) + 'px');
+        s.style.setProperty('--dx1', r(-16, 16).toFixed(0) + 'px');
+        s.style.setProperty('--dx2', r(-26, 26).toFixed(0) + 'px');
+        s.addEventListener('animationend', function () { s.remove(); });
+        box.appendChild(s);
+      }
+      setTimeout(one, r(900, 3200));
+    }
+    setTimeout(one, 1500);
+  }
+
   /* ---------- boot ---------- */
   function preloadImages() {
     WIN_BGS.concat(DIE_BGS, ROOM_BGS, [EXIT_BG]).forEach(function (src) { var i = new Image(); i.src = src; });
@@ -444,6 +471,7 @@
   function boot() {
     wire();
     preloadImages();
+    startSparks();
     var resumed = load();
     if (!resumed) state = S.newGame(settings.maxHp);
     renderAll(newIdsMap([], state.room), false);
