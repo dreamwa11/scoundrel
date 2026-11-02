@@ -453,6 +453,25 @@
       (function (x) { setTimeout(function () { x.remove(); }, 420); })(s);
     }
     setTimeout(function () { b.remove(); }, 340);
+    sparklesBehind(cx, cy, size);
+  }
+
+  // glittering star sparkles that burst out behind the attacking card
+  function sparklesBehind(cx, cy, size) {
+    for (var j = 0; j < 14; j++) {
+      var s = el('<i class="twinkle"></i>'), a2 = Math.random() * Math.PI * 2, d = size * (0.25 + Math.random() * 0.45);
+      var sz = 5 + Math.random() * 7;
+      s.style.left = cx + 'px'; s.style.top = cy + 'px';
+      s.style.width = sz + 'px'; s.style.height = sz + 'px';
+      s.style.setProperty('--bx', (Math.cos(a2) * d).toFixed(0) + 'px');
+      s.style.setProperty('--by', (Math.sin(a2) * d - 10).toFixed(0) + 'px');
+      s.style.setProperty('--sr', (Math.random() * 90).toFixed(0) + 'deg');
+      s.style.animationDuration = (500 + Math.random() * 350).toFixed(0) + 'ms';
+      s.style.animationDelay = (Math.random() * 90).toFixed(0) + 'ms';
+      if (Math.random() < 0.45) s.classList.add('gold');
+      document.body.appendChild(s);
+      (function (x) { setTimeout(function () { x.remove(); }, 1000); })(s);
+    }
   }
 
   // a monster card flies over its target, hits it, then lands (weapon stack) or fades (hero)
