@@ -247,9 +247,11 @@
           ghost.classList.remove('deal', 'slain'); ghost.classList.add('drag');
           ghost.removeAttribute('style');
           ghost.style.width = r0.width + 'px'; ghost.style.height = r0.height + 'px';
+          ghost.style.transform = 'translate3d(' + r0.left + 'px,' + r0.top + 'px,0)';
           document.body.appendChild(ghost);
           el.style.visibility = 'hidden';
           zones = getZones();
+          frame();
           zones.forEach(function (z) { z.el.classList.add(z.ok === false ? 'drop-off' : 'drop-target'); });
           haptic('tap');
         }
@@ -270,7 +272,7 @@
         if (z && z.ok !== false && onDrop(z, ghost)) return;
         if (z && z.ok === false && z.card) dullMsg(z.card);
         // snap back
-        ghost.style.transition = 'transform .22s ease';
+        ghost.style.setProperty('transition', 'transform .22s ease', 'important');
         ghost.style.transform = 'translate3d(' + r0.left + 'px,' + r0.top + 'px,0)';
         setTimeout(function () { ghost.remove(); el.style.visibility = ''; }, 240);
       }

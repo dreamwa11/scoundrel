@@ -157,7 +157,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .room .card { rotate: var(--tilt, 0deg); touch-action: none; -webkit-user-drag: none; }
 .card.drag {
   position: fixed; left: 0; top: 0; margin: 0; z-index: 90; pointer-events: none; rotate: 0deg;
-  box-shadow: 0 14px 24px rgba(0,0,0,.6); will-change: transform; transform: translate3d(0,0,0);
+  box-shadow: 0 14px 24px rgba(0,0,0,.6); will-change: transform; transition: none !important; animation: none !important;
 }
 .card.drag::before { filter: none; }
 .hero, .wstack > .card, .room .card { transition: box-shadow .2s ease, opacity .2s ease; }
