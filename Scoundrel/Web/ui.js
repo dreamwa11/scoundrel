@@ -442,7 +442,7 @@
     try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
     function r(a, b) { return a + Math.random() * (b - a); }
     function one() {
-      if (!document.hidden && box.childElementCount < 6) {
+      if (!document.hidden && box.childElementCount < 8) {
         var s = document.createElement('i');
         s.className = 'spark';
         var h = box.clientHeight || 300;
@@ -457,7 +457,7 @@
         s.addEventListener('animationend', function () { s.remove(); });
         box.appendChild(s);
       }
-      setTimeout(one, r(900, 3200));
+      setTimeout(one, r(650, 2300));
     }
     setTimeout(one, 1500);
   }

@@ -215,7 +215,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .hero svg { position: absolute; left: 0; top: 0; width: 100%; }
 .hero .portrait { position: absolute; inset: 3px; border-radius: 7px; overflow: hidden; background: #000 url('assets/ui/hero.webp') 50% 4% / 150% auto no-repeat; }
 .hero .portrait::before {
-  content: ''; position: absolute; inset: 0; mix-blend-mode: lighten; pointer-events: none; opacity: .55;
+  content: ''; position: absolute; inset: 0; mix-blend-mode: lighten; pointer-events: none; opacity: .34;
   background:
     url('assets/ui/mist-loop.svg') 0 0 / 200% 100% repeat-x,
     url('assets/ui/mist-loop.svg') 0 30% / 160% 90% repeat-x;
@@ -227,7 +227,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   from { background-position: 0 0, 0 30%; }
   to   { background-position: -200% 0, 266.667% 30%; }
 }
-@keyframes heroglow { from { opacity: .4; } to { opacity: .65; } }
+@keyframes heroglow { from { opacity: .26; } to { opacity: .42; } }
 @media (prefers-reduced-motion: reduce) { .hero .portrait::before { animation: none; } }
 .hero .portrait::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 72%, rgba(0,0,0,.9) 100%); }
 .hero .hp { z-index: 2; }
