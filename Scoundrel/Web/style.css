@@ -235,7 +235,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .room .card:active { transform: scale(.95); }
 .card.dull { filter: none; }
 
-.card.back { background: #0b0a09 url('assets/ui/cardback.svg') center / 100% 100% no-repeat; }
+.card.back { background: #0b0a09 url('assets/ui/cardback.svg?v=2') center / 100% 100% no-repeat; }
 .card.back::after { display: none; }
 .card.empty { background: rgba(0,0,0,.25); border: 2px dashed rgba(236,230,214,.25); box-shadow: none; display: grid; place-items: center; color: rgba(236,230,214,.35); font-size: 11px; text-align: center; padding: 6px; }
 .card.empty::after { display: none; }
