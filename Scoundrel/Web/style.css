@@ -154,7 +154,16 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 }
 .card.empty::before { display: none; }
 .wstack > .card:not(.empty):first-child { rotate: var(--wtilt, -2deg); }
-.room .card { rotate: var(--tilt, 0deg); }
+.room .card { rotate: var(--tilt, 0deg); touch-action: none; -webkit-user-drag: none; }
+.card.drag {
+  position: fixed; left: 0; top: 0; margin: 0; z-index: 90; pointer-events: none; rotate: 0deg;
+  box-shadow: 0 18px 30px rgba(0,0,0,.7); will-change: transform;
+}
+.drop-target, .drop-off { transition: transform .15s ease, filter .15s ease, box-shadow .15s ease; }
+#hero.drop-target, #weaponSlot.drop-target .wstack { filter: drop-shadow(0 0 6px rgba(255, 200, 110, .55)); }
+#hero.drop-hover, #weaponSlot.drop-hover .wstack { transform: scale(1.06); filter: drop-shadow(0 0 12px rgba(255, 200, 110, .95)); }
+#weaponSlot.drop-off .wstack { opacity: .55; }
+#weaponSlot.drop-bad .wstack { filter: drop-shadow(0 0 10px rgba(255, 60, 40, .9)); }
 .room .card:active { transform: scale(.95); }
 .card.dull { filter: none; }
 

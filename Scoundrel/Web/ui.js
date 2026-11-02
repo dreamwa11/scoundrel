@@ -179,13 +179,97 @@
       var c = cell.querySelector('.card');
       c.style.setProperty('--tilt', tiltFor(card.id) + 'deg');
       if (isNew) c.style.animationDelay = (newIds[card.id] * 90) + 'ms';
-      c.addEventListener('click', function () { actId(card.id, 'auto'); });
+      c.addEventListener('click', function () { if (dragJustEnded) return; actId(card.id, 'auto'); });
+      attachDrag(c, card);
       cell.querySelectorAll('[data-mode]').forEach(function (b) {
         b.addEventListener('click', function (e) { e.stopPropagation(); actId(card.id, b.getAttribute('data-mode')); });
       });
       room.appendChild(cell);
     });
   }
+  /* ---------- drag & drop ---------- */
+  var dragJustEnded = false;
+  function dropZones(card) {
+    var z = [];
+    var hero = $('hero'), weap = $('weaponSlot');
+    if (card.type === 'monster') {
+      if (hero) z.push({ el: hero, mode: 'fist' });
+      if (weap && state.weapon) z.push({ el: weap, mode: 'weapon', ok: S.weaponCanHit(state, card) });
+    } else if (card.type === 'weapon') {
+      if (weap) z.push({ el: weap, mode: 'auto' });
+    } else {
+      if (hero) z.push({ el: hero, mode: 'auto' });
+    }
+    return z;
+  }
+  function zoneAt(zones, x, y) {
+    for (var k = 0; k < zones.length; k++) {
+      var r = zones[k].el.getBoundingClientRect(), pad = 18;
+      if (x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad) return zones[k];
+    }
+    return null;
+  }
+  function attachDrag(c, card) {
+    c.addEventListener('pointerdown', function (e) {
+      if (busy || state.over || (e.button && e.button !== 0)) return;
+      var pid = e.pointerId, sx = e.clientX, sy = e.clientY;
+      var r0 = c.getBoundingClientRect(), offX = sx - r0.left, offY = sy - r0.top;
+      var ghost = null, zones = null, over = null;
+      function place(x, y) {
+        ghost.style.transform = 'translate(' + (x - offX) + 'px,' + (y - offY) + 'px) rotate(' + ((x - sx) / 40).toFixed(1) + 'deg) scale(1.08)';
+      }
+      function setOver(z) {
+        if (over === z) return;
+        if (over) over.el.classList.remove('drop-hover', 'drop-bad');
+        over = z;
+        if (over) { over.el.classList.add(over.ok === false ? 'drop-bad' : 'drop-hover'); haptic('tap'); }
+      }
+      function move(ev) {
+        if (ev.pointerId !== pid) return;
+        if (!ghost) {
+          if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 10) return;
+          ghost = c.cloneNode(true);
+          ghost.classList.remove('deal'); ghost.classList.add('drag');
+          ghost.style.width = r0.width + 'px'; ghost.style.height = r0.height + 'px';
+          document.body.appendChild(ghost);
+          c.style.visibility = 'hidden';
+          zones = dropZones(card);
+          zones.forEach(function (z) { z.el.classList.add(z.ok === false ? 'drop-off' : 'drop-target'); });
+          haptic('tap');
+        }
+        if (ev.cancelable) ev.preventDefault();
+        place(ev.clientX, ev.clientY);
+        setOver(zoneAt(zones, ev.clientX, ev.clientY));
+      }
+      function end(ev) {
+        if (ev.pointerId !== pid) return;
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', end);
+        window.removeEventListener('pointercancel', end);
+        if (!ghost) return;
+        dragJustEnded = true; setTimeout(function () { dragJustEnded = false; }, 60);
+        var z = ev.type === 'pointerup' ? zoneAt(zones, ev.clientX, ev.clientY) : null;
+        zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad'); });
+        var i = -1; state.room.forEach(function (x, k) { if (x.id === card.id) i = k; });
+        if (z && z.ok !== false && i !== -1) {
+          act(i, z.mode, ghost);
+          return;
+        }
+        if (z && z.ok === false) {
+          state.message = 'Your weapon is too dull for the ' + S.monsterName(card) + ' (it only hits ' + state.weapon.last + ' or lower).';
+          renderMessage(true); haptic('warning');
+        }
+        // snap back
+        ghost.style.transition = 'transform .25s ease';
+        ghost.style.transform = 'translate(' + r0.left + 'px,' + r0.top + 'px) rotate(0deg) scale(1)';
+        setTimeout(function () { ghost.remove(); c.style.visibility = ''; }, 260);
+      }
+      window.addEventListener('pointermove', move, { passive: false });
+      window.addEventListener('pointerup', end);
+      window.addEventListener('pointercancel', end);
+    });
+  }
+
   function actId(id, mode) {
     var i = -1; state.room.forEach(function (c, k) { if (c.id === id) i = k; });
     if (i !== -1) act(i, mode);
@@ -255,7 +339,7 @@
     return new Promise(function (resolve) {
       var r = rectOf(fromEl);
       var c = fromEl.cloneNode(true);
-      c.classList.remove('deal'); c.style.animation = 'none';
+      c.classList.remove('deal', 'drag'); c.style.animation = 'none'; c.style.transform = 'none'; c.style.transition = '';
       c.classList.add('fly');
       c.style.left = r.left + 'px'; c.style.top = r.top + 'px'; c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; c.style.margin = 0;
       document.body.appendChild(c);
@@ -295,14 +379,14 @@
     return m;
   }
 
-  function act(i, mode) {
+  function act(i, mode, srcEl) {
     if (busy || state.over) return;
     var prev = state;
     var res = S.resolve(state, i, mode);
     var ev = res.event; if (!ev) return;
     busy = true; renderButtons();
 
-    var cardEl = $('room').querySelector('.cell[data-id="' + state.room[i].id + '"] .card');
+    var cardEl = srcEl || $('room').querySelector('.cell[data-id="' + state.room[i].id + '"] .card');
     var target, opts = {};
     if (ev.kind === 'kill-weapon' || ev.kind === 'equip') { target = rectOf($('wstack')); opts.rot = 6; }
     else if (ev.kind === 'kill-fist') { target = rectOf($('hero')); opts.scale = 0.5; opts.fade = true; opts.rot = -12; }
@@ -315,6 +399,7 @@
     else haptic('warning');
 
     flyCard(cardEl, target, opts).then(function () {
+      if (srcEl && srcEl.parentNode) srcEl.remove();
       state = res.state;
       renderAll(newIdsMap(prev.room, state.room), true);
       if (ev.damage) {
