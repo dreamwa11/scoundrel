@@ -17,6 +17,12 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Use the newest Xcode on this Mac
+        run: |
+          X=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$X" ]; then sudo xcode-select -s "$X"; fi
+          xcodebuild -version
+
       - name: Generate Xcode project
         run: xcodegen generate
 
