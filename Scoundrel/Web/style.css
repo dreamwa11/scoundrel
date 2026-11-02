@@ -284,7 +284,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* deck pile */
 .pile { position: relative; width: var(--cw); height: var(--ch); }
 .pile .card { position: absolute; top: 0; left: 0; }
-.pile .count { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); z-index: 10; min-width: 38px; padding: 1px 10px; text-align: center; border-radius: 12px; background: #120d09; border: 1px solid var(--gold); color: #ffe7a8; font-family: 'Astloch', serif; font-size: 24px; line-height: 1.1; }
+.pile .count { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); z-index: 10; min-width: 38px; padding: 1px 10px; text-align: center; border-radius: 12px; background: #120d09; border: 1px solid var(--gold); color: #ffe7a8; font-family: 'PirataOne', 'Astloch', serif; font-size: 24px; line-height: 1.1; }
 
 /* hero */
 .hero {
@@ -363,7 +363,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .sheet h2 { margin: 0 0 6px; font-family: 'Astloch', serif; font-size: 32px; text-align: center; font-weight: 700; color: #f4e2bd; letter-spacing: 1px; }
 .sheet.scroll { max-height: 100%; }
 .rules-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 4px; font-size: 15px; line-height: 1.45; color: #e2dac7; -webkit-user-select: text; user-select: text; }
-.rules-body h3 { font-family: 'Astloch', serif; font-size: 22px; color: var(--gold); margin: 16px 0 4px; letter-spacing: 1px; }
+.rules-body h3 { font-family: 'PirataOne', 'Astloch', serif; font-size: 22px; color: var(--gold); margin: 16px 0 4px; letter-spacing: 1px; }
 .rules-body p { margin: 6px 0; }
 .rules-body ul { margin: 4px 0; padding-left: 20px; }
 .rules-body .lead { font-size: 16px; color: #f4ecd9; }
