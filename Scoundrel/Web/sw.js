@@ -1,5 +1,5 @@
 /* Offline cache for the browser / home-screen version. Not used inside the iOS app. */
-var CACHE = 'scoundrel-v26';
+var CACHE = 'scoundrel-v27';
 var FILES = [
   './',
   'art.js',
