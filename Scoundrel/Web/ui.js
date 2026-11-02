@@ -238,6 +238,9 @@
           if (over) over.el.classList.remove('drop-hover', 'drop-bad');
           over = z;
           if (over) { over.el.classList.add(over.ok === false ? 'drop-bad' : 'drop-hover'); haptic('tap'); }
+          // hovering a fatal target that isn't the hero: still warn on the hero
+          var hero = $('hero');
+          if (hero) hero.classList.toggle('doomed', !!(over && over.lethal && over.ok !== false && over.el !== hero));
         }
       }
       function move(ev) {
@@ -275,6 +278,7 @@
         if (ev.type === 'pointerup') for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, ev.clientX, ev.clientY, 16)) { z = zones[k]; break; }
         zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad', 'drop-lethal'); });
         noGo.forEach(function (s) { s.classList.remove('drop-no'); });
+        if ($('hero')) $('hero').classList.remove('doomed');
         if (z && z.ok !== false && onDrop(z, ghost)) return;
         if (z && z.ok === false && z.card) dullMsg(z.card);
         // snap back
