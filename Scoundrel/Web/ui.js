@@ -135,6 +135,13 @@
     });
   }
 
+  // equipped weapon: random lean of 1.5°–3.5° to either side, stable per weapon
+  function weaponTilt(id) {
+    var t = parseFloat(tiltFor(id + 97)) / 1.2;           // -1..1
+    var mag = 1.5 + Math.abs(t) * 2;
+    return ((t < 0 ? -1 : 1) * mag).toFixed(2);
+  }
+
   // subtle, random-looking but stable tilt per card (-1.2° to 1.2°)
   var tiltSeed = Math.floor(Math.random() * 1000);
   function tiltFor(id) {
@@ -190,7 +197,7 @@
     if (!w) {
       html += '<div class="card empty">' + A.icon('fist') + '<br>No weapon</div>';
     } else {
-      html += cardHTML(w.card);
+      html += cardHTML(w.card).replace('class="card', 'style="--wtilt:' + weaponTilt(w.card.id) + 'deg" class="card');
       var n = w.slain.length, step = n > 1 ? Math.min(7, 30 / (n - 1)) : 0;
       w.slain.forEach(function (m, i) {
         html += cardHTML(m, 'slain').replace('class="card', 'style="left:' + (24 + i * step) + 'px;top:' + (i * 2 - 6) + 'px;transform:rotate(' + (6 + i * 2) + 'deg) scale(.66)" class="card');
