@@ -192,15 +192,14 @@
         s.weapon.last = card.value;
         s.weapon.slain.push(card);
         ev.kind = 'kill-weapon';
-        s.message = 'Slew the ' + name + ' with your ' + weaponName(s.weapon.card).toLowerCase() +
-          (dmg ? '. Took ' + dmg + ' damage.' : '. No damage!');
+        s.message = 'Slew the ' + name + (dmg ? '. Took ' + dmg + ' damage.' : '. No damage taken.');
       } else {
         dmg = card.value;
         ev.kind = 'kill-fist';
         if (mode === 'weapon' && s.weapon) {
-          s.message = 'Your weapon is too dull for the ' + name + '. Bare hands: took ' + dmg + '.';
+          s.message = 'Too dull for the ' + name + '. Bare hands: took ' + dmg + '.';
         } else {
-          s.message = 'Fought the ' + name + ' bare-handed. Took ' + dmg + ' damage.';
+          s.message = 'Fought the ' + name + ' bare-handed. Took ' + dmg + '.';
         }
       }
       s.hp -= dmg;
@@ -214,7 +213,7 @@
       s.lastAction = 'equip';
     } else {
       if (s.potionUsed) {
-        s.message = 'Already drank this room. The potion is wasted.';
+        s.message = 'One potion per room. This one is wasted.';
         ev.kind = 'wasted';
       } else {
         var before = s.hp;
@@ -223,7 +222,7 @@
         s.potionUsed = true;
         s.lastAction = 'potion';
         s.lastPotion = card.value;
-        s.message = ev.heal > 0 ? 'Drank a potion: +' + ev.heal + ' HP.' : 'Drank a potion, but you were already at full health.';
+        s.message = ev.heal > 0 ? 'Drank a potion: +' + ev.heal + ' HP.' : 'Drank a potion. Already at full health.';
         ev.kind = 'potion';
       }
     }
@@ -252,7 +251,7 @@
     s.fledLast = true;
     s.roomNo += 1;
     s.lastAction = 'flee';
-    s.message = 'You fled. The room slinks to the bottom of the deck.';
+    s.message = 'You fled to the next room.';
     return { state: s, event: { kind: 'flee' } };
   }
 
