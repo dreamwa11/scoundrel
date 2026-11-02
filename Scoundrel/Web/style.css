@@ -30,8 +30,12 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 #app {
   position: fixed; inset: 0;
   display: flex; flex-direction: column;
-  padding-top: var(--sat);
-  padding-bottom: var(--sab);
+  padding-top: max(var(--sat), 8px);
+}
+/* Home-screen app: fill the whole screen (iOS otherwise leaves a gap at the bottom) */
+@media (display-mode: standalone) {
+  html, body { height: 100vh; }
+  #app { bottom: auto; height: 100vh; }
 }
 
 /* backgrounds */
@@ -57,9 +61,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* top bar */
 .topbar {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  padding: 8px 14px 0; min-height: 48px;
+  padding: 10px 14px 0; min-height: 48px;
 }
-.deckinfo { font-size: 15px; font-weight: 600; color: var(--ink); text-shadow: 0 2px 4px #000; white-space: nowrap; }
+.deckinfo { font-size: 15px; font-weight: 600; color: var(--ink); text-shadow: 0 1px 1px #000; white-space: nowrap; }
 .deckinfo .icon { margin-right: 4px; }
 .deckinfo .mons { color: var(--ink-dim); margin-left: 6px; }
 .roomtitle { font-family: 'Astloch', serif; font-size: 26px; letter-spacing: 1px; text-shadow: 0 2px 6px #000; }
@@ -111,6 +115,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .card.potion .val, .card.potion .corner { color: #ff5a4f; }
 .card.weapon .val, .card.weapon .corner { color: var(--gold); }
 .card.monster.royal { border-color: var(--gold); }
+.room .card { rotate: var(--tilt, 0deg); }
 .room .card:active { transform: scale(.95); }
 .card.dull { filter: none; }
 
@@ -202,7 +207,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 }
 
 /* buttons */
-.actions { display: flex; gap: 10px; padding: 10px 12px 12px; background: rgba(12,8,5,.96); }
+.actions { display: flex; gap: 10px; padding: 10px 12px calc(12px + var(--sab)); background: rgba(12,8,5,.96); }
 .btn {
   flex: 1; min-height: 48px; border-radius: 12px; padding: 10px 14px;
   background: #1d1611; border: 1.5px solid rgba(236,230,214,.35);

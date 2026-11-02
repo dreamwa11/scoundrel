@@ -135,6 +135,13 @@
     });
   }
 
+  // subtle, random-looking but stable tilt per card (-2.5° to 2.5°)
+  var tiltSeed = Math.floor(Math.random() * 1000);
+  function tiltFor(id) {
+    var x = Math.sin((id + 1) * 12.9898 + tiltSeed * 78.233) * 43758.5453;
+    return ((x - Math.floor(x)) * 5 - 2.5).toFixed(2);
+  }
+
   function renderRoom(newIds) {
     var room = $('room');
     room.innerHTML = '';
@@ -147,6 +154,7 @@
       var isNew = newIds && newIds[card.id] !== undefined;
       var cell = el('<div class="cell" data-id="' + card.id + '">' + cardHTML(card, isNew ? 'deal' : '') + chipsFor(card) + '</div>');
       var c = cell.querySelector('.card');
+      c.style.setProperty('--tilt', tiltFor(card.id) + 'deg');
       if (isNew) c.style.animationDelay = (newIds[card.id] * 90) + 'ms';
       c.addEventListener('click', function () { actId(card.id, 'auto'); });
       cell.querySelectorAll('[data-mode]').forEach(function (b) {
