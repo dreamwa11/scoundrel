@@ -172,8 +172,8 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 #hero.drop-lethal.drop-hover .doom { opacity: .55; transform: scale(1.04); }
 #hero.drop-target.drop-lethal, #weaponSlot.drop-target.drop-lethal .wstack > .card:first-child, .room .card.drop-target.drop-lethal { box-shadow: 0 0 0 1px rgba(255, 70, 50, .35), 0 0 10px 1px rgba(255, 40, 30, .3); }
 #hero.drop-hover.drop-lethal, #weaponSlot.drop-hover.drop-lethal .wstack > .card:first-child, .room .card.drop-hover.drop-lethal { box-shadow: 0 0 0 1px rgba(255, 70, 50, .65), 0 0 16px 4px rgba(255, 40, 30, .5); }
-#weaponSlot.drop-off .wstack, .room .card.drop-off { filter: grayscale(1) brightness(.55); }
-.drop-no, #weaponSlot.drop-no .wstack { filter: grayscale(1) brightness(.5); transition: filter .18s ease; }
+#weaponSlot.drop-off .wstack, .room .card.drop-off { filter: grayscale(.65) brightness(.7); }
+.drop-no, #weaponSlot.drop-no .wstack { filter: grayscale(.65) brightness(.68); transition: filter .18s ease; }
 #weaponSlot.drop-no { filter: none; }
 .room .card.struck { animation: struck .32s ease-out; }
 @keyframes struck {
