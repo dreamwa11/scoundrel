@@ -84,11 +84,25 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .hurt.on { animation: hurt .55s ease-out; }
 .hurt.heal { box-shadow: inset 0 0 90px 30px rgba(90, 210, 90, .55); }
 @keyframes hurt { 0% { opacity: 1; } 100% { opacity: 0; } }
-#app.shake { animation: shake .35s cubic-bezier(.36,.07,.19,.97); }
+#app.shake { animation: shake .26s ease-out; }
 @keyframes shake {
-  10%, 90% { transform: translate(-1px, 0); } 20%, 80% { transform: translate(3px, 1px); }
-  30%, 50%, 70% { transform: translate(-5px, -1px); } 40%, 60% { transform: translate(5px, 1px); }
+  20% { transform: translate(-3px, 1px); } 40% { transform: translate(3px, -1px); }
+  60% { transform: translate(-2px, 1px); } 80% { transform: translate(1px, 0); } 100% { transform: translate(0, 0); }
 }
+.blast { position: fixed; z-index: 96; pointer-events: none; transform: translate(-50%, -50%) scale(.2) rotate(0deg); opacity: 0; animation: blast .4s cubic-bezier(.2,.9,.3,1) forwards; }
+.blast svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 6px rgba(255, 160, 60, .7)); }
+@keyframes blast {
+  0% { transform: translate(-50%,-50%) scale(.2) rotate(0deg); opacity: 0; }
+  25% { transform: translate(-50%,-50%) scale(1) rotate(8deg); opacity: .95; }
+  100% { transform: translate(-50%,-50%) scale(1.25) rotate(14deg); opacity: 0; }
+}
+.burst-spark {
+  position: fixed; z-index: 97; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; pointer-events: none;
+  background: #fff1c9; box-shadow: 0 0 6px 2px rgba(255, 170, 60, .85);
+  animation: burstspark .55s cubic-bezier(.15,.7,.3,1) forwards;
+}
+@keyframes burstspark { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--bx), var(--by)) scale(.3); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { #app.shake { animation: none; } }
 
 /* top bar */
 .topbar {

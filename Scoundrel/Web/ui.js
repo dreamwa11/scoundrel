@@ -422,6 +422,69 @@
     h.classList.remove('on'); void h.offsetWidth; h.classList.add('on');
   }
   function shake() { var a = $('app'); a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake'); }
+
+  // cartoon impact burst centred on a rect
+  function blastAt(r) {
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2, size = Math.max(r.width, r.height) * 1.15;
+    var pts = '', n = 12;
+    for (var k = 0; k < n * 2; k++) {
+      var ang = (k / (n * 2)) * Math.PI * 2 - Math.PI / 2, rad = k % 2 ? 22 + Math.random() * 6 : 46 + Math.random() * 4;
+      pts += (50 + Math.cos(ang) * rad).toFixed(1) + ',' + (50 + Math.sin(ang) * rad).toFixed(1) + ' ';
+    }
+    var b = el('<div class="blast"><svg viewBox="0 0 100 100"><polygon points="' + pts + '" fill="#ffd27a" stroke="#fff4dc" stroke-width="2" stroke-linejoin="round"/>' +
+      '<polygon points="' + pts + '" fill="#ff7a2e" transform="translate(50 50) scale(.55) translate(-50 -50)"/></svg></div>');
+    b.style.left = cx + 'px'; b.style.top = cy + 'px'; b.style.width = size + 'px'; b.style.height = size + 'px';
+    document.body.appendChild(b);
+    for (var j = 0; j < 9; j++) {
+      var s = el('<i class="burst-spark"></i>'), a2 = Math.random() * Math.PI * 2, d = size * (0.45 + Math.random() * 0.35);
+      s.style.left = cx + 'px'; s.style.top = cy + 'px';
+      s.style.setProperty('--bx', (Math.cos(a2) * d).toFixed(0) + 'px');
+      s.style.setProperty('--by', (Math.sin(a2) * d).toFixed(0) + 'px');
+      s.style.animationDelay = (Math.random() * 60).toFixed(0) + 'ms';
+      document.body.appendChild(s);
+      (function (x) { setTimeout(function () { x.remove(); }, 650); })(s);
+    }
+    setTimeout(function () { b.remove(); }, 420);
+  }
+
+  // a monster card flies over its target, hits it, then lands (weapon stack) or fades (hero)
+  function attackAnim(fromEl, targetEl, toStack, done) {
+    var r = rectOf(fromEl), t = rectOf(targetEl);
+    var c = fromEl.cloneNode(true);
+    c.classList.remove('deal', 'drag', 'drop-hover', 'drop-target', 'drop-lethal', 'drop-no');
+    c.removeAttribute('style');
+    c.classList.add('fly');
+    c.style.left = '0px'; c.style.top = '0px'; c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; c.style.margin = 0;
+    c.style.transition = 'none';
+    var fromT = fromEl.classList.contains('drag') ? (fromEl.style.transform || '') : 'translate3d(' + r.left + 'px,' + r.top + 'px,0)';
+    if (fromEl.classList.contains('drag')) { c.style.transformOrigin = fromEl.style.transformOrigin; }
+    c.style.transform = fromT;
+    document.body.appendChild(c);
+    fromEl.style.visibility = 'hidden';
+    var tx = t.left + (t.width - r.width) / 2, ty = t.top + (t.height - r.height) / 2 - t.height * 0.12;
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      c.style.transformOrigin = '50% 50%';
+      c.style.transition = 'transform .2s cubic-bezier(.45,0,.9,.5)';
+      c.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(-6deg) scale(.96)';
+    }); });
+    setTimeout(function () {
+      blastAt(t); shake();
+      c.style.transition = 'transform .09s ease-out';
+      c.style.transform = 'translate3d(' + tx + 'px,' + (ty + t.height * 0.08) + 'px,0) rotate(4deg) scale(.92)';
+    }, 200);
+    setTimeout(function () {
+      if (toStack) {
+        c.style.transition = 'transform .22s ease, opacity .22s ease';
+        c.style.transform = 'translate3d(' + (t.left + 20) + 'px,' + (t.top - 4) + 'px,0) rotate(8deg) scale(.66)';
+        c.style.opacity = '0.2';
+      } else {
+        c.style.transition = 'transform .24s ease, opacity .24s ease';
+        c.style.transform = 'translate3d(' + tx + 'px,' + (ty + 10) + 'px,0) rotate(10deg) scale(.6)';
+        c.style.opacity = '0';
+      }
+    }, 330);
+    setTimeout(function () { c.remove(); done(); }, 580);
+  }
   function bumpHero() { var h = $('hero'); if (h) { h.classList.remove('bump'); void h.offsetWidth; h.classList.add('bump'); } }
 
   /* ---------- actions ---------- */
@@ -456,7 +519,6 @@
       }
       if (ev.damage) {
         floater('−' + ev.damage, 'dmg'); hurtFlash(false); bumpHero();
-        if (ev.damage >= 5) shake();
       } else if (ev.heal) {
         floater('+' + ev.heal, 'heal'); hurtFlash(true); bumpHero();
       }
@@ -467,7 +529,7 @@
     }
 
     if (strikeGhost && ev.kind === 'kill-weapon') {
-      // weapon lunges into the monster, slash, weapon returns, monster vanishes and reappears on the stack
+      // weapon lunges into the monster, impact burst, weapon returns, monster vanishes and reappears on the stack
       var mr = rectOf(cardEl), g = strikeGhost, gw = parseFloat(g.style.width), gh = parseFloat(g.style.height);
       var tx = mr.left + (mr.width - gw) / 2, ty = mr.top + (mr.height - gh) / 2;
       g.style.transformOrigin = '50% 50%';
@@ -475,11 +537,7 @@
       g.style.transform = 'translate3d(' + (tx + 10) + 'px,' + (ty + 14) + 'px,0) rotate(-18deg) scale(1.04)';
       setTimeout(function () {
         cardEl.classList.add('struck');
-        var s = el('<div class="slash"></div>');
-        s.style.left = (mr.left + mr.width / 2) + 'px'; s.style.top = (mr.top + mr.height / 2) + 'px';
-        s.style.width = (mr.width * 1.5) + 'px';
-        document.body.appendChild(s);
-        setTimeout(function () { s.remove(); }, 450);
+        blastAt(mr); shake();
       }, 120);
       setTimeout(function () {
         var home = $('wstack').querySelector('.card:not(.slain)') || $('wstack');
@@ -489,6 +547,12 @@
         cardEl.classList.add('vanish');
       }, 430);
       setTimeout(function () { g.remove(); finish(); }, 800);
+      return;
+    }
+
+    if (ev.kind === 'kill-fist' || ev.kind === 'kill-weapon') {
+      var tEl = ev.kind === 'kill-fist' ? $('hero') : ($('wstack').querySelector('.card:not(.slain)') || $('wstack'));
+      attackAnim(cardEl, tEl, ev.kind === 'kill-weapon', finish);
       return;
     }
 
