@@ -163,6 +163,8 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .hero, .wstack > .card, .room .card { transition: box-shadow .2s ease, filter .2s ease; }
 #hero.drop-target, #weaponSlot.drop-target .wstack > .card:first-child, .room .card.drop-target { box-shadow: 0 0 0 1px rgba(255, 210, 140, .25), 0 0 10px 1px rgba(255, 190, 100, .22); }
 #hero.drop-hover, #weaponSlot.drop-hover .wstack > .card:first-child, .room .card.drop-hover { box-shadow: 0 0 0 1px rgba(255, 210, 140, .5), 0 0 14px 3px rgba(255, 190, 100, .38); }
+#hero.drop-target.drop-lethal, #weaponSlot.drop-target.drop-lethal .wstack > .card:first-child, .room .card.drop-target.drop-lethal { box-shadow: 0 0 0 1px rgba(255, 70, 50, .35), 0 0 10px 1px rgba(255, 40, 30, .3); }
+#hero.drop-hover.drop-lethal, #weaponSlot.drop-hover.drop-lethal .wstack > .card:first-child, .room .card.drop-hover.drop-lethal { box-shadow: 0 0 0 1px rgba(255, 70, 50, .65), 0 0 16px 4px rgba(255, 40, 30, .5); }
 #weaponSlot.drop-off .wstack, .room .card.drop-off { filter: grayscale(1) brightness(.55); }
 .drop-no, #weaponSlot.drop-no .wstack { filter: grayscale(1) brightness(.5); transition: filter .18s ease; }
 #weaponSlot.drop-no { filter: none; }

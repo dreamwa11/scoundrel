@@ -198,8 +198,9 @@
   function roomCardZones(card) {
     var z = [], hero = $('hero'), weap = $('weaponSlot');
     if (card.type === 'monster') {
-      if (hero) z.push({ el: hero, mode: 'fist' });
-      if (weap && state.weapon) z.push({ el: weap, mode: 'weapon', ok: S.weaponCanHit(state, card) });
+      var p = S.damagePreview(state, card);
+      if (hero) z.push({ el: hero, mode: 'fist', lethal: p.fist >= state.hp });
+      if (weap && state.weapon) z.push({ el: weap, mode: 'weapon', ok: S.weaponCanHit(state, card), lethal: p.weapon !== null && p.weapon >= state.hp });
     } else if (card.type === 'weapon') {
       if (weap) z.push({ el: weap, mode: 'auto' });
     } else if (hero) z.push({ el: hero, mode: 'auto' });
@@ -211,7 +212,8 @@
     state.room.forEach(function (c) {
       if (c.type !== 'monster') return;
       var cell = $('room').querySelector('.cell[data-id="' + c.id + '"] .card');
-      if (cell) z.push({ el: cell, id: c.id, mode: 'weapon', ok: S.weaponCanHit(state, c), card: c });
+      var p = S.damagePreview(state, c);
+      if (cell) z.push({ el: cell, id: c.id, mode: 'weapon', ok: S.weaponCanHit(state, c), card: c, lethal: p.weapon !== null && p.weapon >= state.hp });
     });
     return z;
   }
@@ -252,7 +254,7 @@
           document.body.appendChild(ghost);
           el.style.visibility = 'hidden';
           zones = getZones();
-          zones.forEach(function (z) { z.el.classList.add(z.ok === false ? 'drop-off' : 'drop-target'); });
+          zones.forEach(function (z) { z.el.classList.add(z.ok === false ? 'drop-off' : 'drop-target'); if (z.lethal && z.ok !== false) z.el.classList.add('drop-lethal'); });
           noGo = allSpots().filter(function (s) { return s !== el && !zones.some(function (z) { return z.el === s; }); });
           noGo.forEach(function (s) { s.classList.add('drop-no'); });
           frame();
@@ -271,7 +273,7 @@
         dragJustEnded = true; setTimeout(function () { dragJustEnded = false; }, 60);
         var z = null;
         if (ev.type === 'pointerup') for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, ev.clientX, ev.clientY, 16)) { z = zones[k]; break; }
-        zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad'); });
+        zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad', 'drop-lethal'); });
         noGo.forEach(function (s) { s.classList.remove('drop-no'); });
         if (z && z.ok !== false && onDrop(z, ghost)) return;
         if (z && z.ok === false && z.card) dullMsg(z.card);
