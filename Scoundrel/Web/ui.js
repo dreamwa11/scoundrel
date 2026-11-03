@@ -194,6 +194,22 @@
     var r = el.getBoundingClientRect();
     return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad;
   }
+  // the zone under the finger: one it is actually inside wins; otherwise the nearest one within a small margin
+  function pickZone(zones, x, y) {
+    var best = null, bestD = Infinity;
+    for (var k = 0; k < zones.length; k++) {
+      var r = zones[k].el.getBoundingClientRect();
+      var dx = Math.max(r.left - x, 0, x - r.right), dy = Math.max(r.top - y, 0, y - r.bottom);
+      var d = Math.sqrt(dx * dx + dy * dy);
+      if (d === 0) {
+        // inside: prefer the one whose centre is closest (rotated cards' boxes can overlap)
+        var cx = (r.left + r.right) / 2 - x, cy = (r.top + r.bottom) / 2 - y;
+        d = -1 / (1 + Math.sqrt(cx * cx + cy * cy));
+      }
+      if (d < bestD && d <= 16) { bestD = d; best = zones[k]; }
+    }
+    return best;
+  }
   // zones a room card can be dropped on
   function roomCardZones(card) {
     var z = [], hero = $('hero'), weap = $('weaponSlot');
@@ -233,7 +249,7 @@
         raf = 0;
         ghost.style.transform = 'translate3d(' + (px - offX) + 'px,' + (py - offY) + 'px,0) rotate(' + Math.max(-8, Math.min(8, (px - sx) / 40)).toFixed(1) + 'deg) scale(1.12)';
         var z = null;
-        for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, px, py, 16)) { z = zones[k]; break; }
+        z = pickZone(zones, px, py);
         if (z !== over) {
           if (over) over.el.classList.remove('drop-hover', 'drop-bad');
           over = z;
@@ -275,7 +291,7 @@
         if (raf) { cancelAnimationFrame(raf); raf = 0; }
         dragJustEnded = true; setTimeout(function () { dragJustEnded = false; }, 60);
         var z = null;
-        if (ev.type === 'pointerup') for (var k = 0; k < zones.length; k++) if (hit(zones[k].el, ev.clientX, ev.clientY, 16)) { z = zones[k]; break; }
+        if (ev.type === 'pointerup') z = pickZone(zones, ev.clientX, ev.clientY);
         zones.forEach(function (q) { q.el.classList.remove('drop-target', 'drop-off', 'drop-hover', 'drop-bad', 'drop-lethal'); });
         noGo.forEach(function (s) { s.classList.remove('drop-no'); });
         if ($('hero')) $('hero').classList.remove('doomed');
@@ -295,6 +311,7 @@
   // every place a card could land, used to dim the ones that aren't allowed
   function allSpots() {
     var s = [];
+    if ($('pile')) s.push($('pile'));
     if ($('hero')) s.push($('hero'));
     if ($('weaponSlot')) s.push($('weaponSlot'));
     Array.prototype.forEach.call($('room').querySelectorAll('.cell[data-id] .card'), function (c) { s.push(c); });
