@@ -409,20 +409,33 @@
 
   /* ---------- effects ---------- */
   function rectOf(node) { return node.getBoundingClientRect(); }
+  // true on-screen box of a card: unscaled size, visual centre, current scale and tilt
+  function cardBox(el) {
+    var r = el.getBoundingClientRect(), drag = el.classList.contains('drag');
+    var w = drag ? parseFloat(el.style.width) : el.offsetWidth, h = drag ? parseFloat(el.style.height) : el.offsetHeight;
+    var tf = drag ? (el.style.transform || '') : '';
+    var sm = tf.match(/scale\(([-\d.]+)\)/), rm = tf.match(/rotate\(([-\d.]+)deg\)/);
+    var rot = rm ? parseFloat(rm[1]) : (parseFloat(getComputedStyle(el).rotate) || 0);
+    return { w: w || r.width, h: h || r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2, s: sm ? parseFloat(sm[1]) : 1, rot: rot };
+  }
+
   function flyCard(fromEl, toRect, opts) {
     return new Promise(function (resolve) {
-      var r = rectOf(fromEl);
+      var bx = cardBox(fromEl);
       var c = fromEl.cloneNode(true);
-      c.classList.remove('deal', 'drag'); c.style.animation = 'none'; c.style.transform = 'none'; c.style.transition = '';
+      c.classList.remove('deal', 'drag'); c.removeAttribute('style');
       c.classList.add('fly');
-      c.style.left = r.left + 'px'; c.style.top = r.top + 'px'; c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; c.style.margin = 0;
+      c.style.left = (bx.cx - bx.w / 2) + 'px'; c.style.top = (bx.cy - bx.h / 2) + 'px'; c.style.width = bx.w + 'px'; c.style.height = bx.h + 'px'; c.style.margin = 0;
+      c.style.transition = 'none'; c.style.animation = 'none';
+      c.style.transform = 'translate(0px,0px) scale(' + bx.s + ') rotate(' + bx.rot + 'deg)';
       document.body.appendChild(c);
       fromEl.style.visibility = 'hidden';
-      var dx = toRect.left + toRect.width / 2 - (r.left + r.width / 2);
-      var dy = toRect.top + toRect.height / 2 - (r.top + r.height / 2);
-      var sc = opts.scale != null ? opts.scale : toRect.width / r.width;
+      var dx = toRect.left + toRect.width / 2 - bx.cx;
+      var dy = toRect.top + toRect.height / 2 - bx.cy;
+      var sc = opts.scale != null ? opts.scale : toRect.width / bx.w;
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
+          c.style.transition = '';
           c.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ') rotate(' + (opts.rot || 0) + 'deg)';
           if (opts.fade) c.style.opacity = 0;
         });
@@ -497,21 +510,18 @@
 
   // a monster card flies over its target, hits it, then lands (weapon stack) or fades (hero)
   function attackAnim(fromEl, targetEl, toStack, done) {
-    var r = rectOf(fromEl), t = rectOf(targetEl);
+    var bx = cardBox(fromEl), t = rectOf(targetEl), r = { width: bx.w, height: bx.h };
     var c = fromEl.cloneNode(true);
     c.classList.remove('deal', 'drag', 'drop-hover', 'drop-target', 'drop-lethal', 'drop-no');
     c.removeAttribute('style');
     c.classList.add('fly');
-    c.style.left = '0px'; c.style.top = '0px'; c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; c.style.margin = 0;
-    c.style.transition = 'none';
-    var fromT = fromEl.classList.contains('drag') ? (fromEl.style.transform || '') : 'translate3d(' + r.left + 'px,' + r.top + 'px,0)';
-    if (fromEl.classList.contains('drag')) { c.style.transformOrigin = fromEl.style.transformOrigin; }
-    c.style.transform = fromT;
+    c.style.left = '0px'; c.style.top = '0px'; c.style.width = bx.w + 'px'; c.style.height = bx.h + 'px'; c.style.margin = 0;
+    c.style.transition = 'none'; c.style.transformOrigin = '50% 50%';
+    c.style.transform = 'translate3d(' + (bx.cx - bx.w / 2) + 'px,' + (bx.cy - bx.h / 2) + 'px,0) rotate(' + bx.rot + 'deg) scale(' + bx.s + ')';
     document.body.appendChild(c);
     fromEl.style.visibility = 'hidden';
     var tx = t.left + (t.width - r.width) / 2, ty = t.top + (t.height - r.height) / 2 - t.height * 0.12;
     requestAnimationFrame(function () { requestAnimationFrame(function () {
-      c.style.transformOrigin = '50% 50%';
       c.style.transition = 'transform .38s cubic-bezier(.5,0,.75,.35)';
       c.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0) rotate(-6deg) scale(.96)';
     }); });
@@ -586,7 +596,11 @@
       // weapon lunges into the monster, impact burst, weapon returns, monster vanishes and reappears on the stack
       var mr = rectOf(cardEl), g = strikeGhost, gw = parseFloat(g.style.width), gh = parseFloat(g.style.height);
       var tx = mr.left + (mr.width - gw) / 2, ty = mr.top + (mr.height - gh) / 2;
+      var gb = cardBox(g);
+      g.style.setProperty('transition', 'none', 'important');
       g.style.transformOrigin = '50% 50%';
+      g.style.transform = 'translate3d(' + (gb.cx - gw / 2) + 'px,' + (gb.cy - gh / 2) + 'px,0) rotate(' + gb.rot + 'deg) scale(' + gb.s + ')';
+      void g.offsetWidth;
       g.style.setProperty('transition', 'transform .13s cubic-bezier(.5,0,.9,.4)', 'important');
       g.style.transform = 'translate3d(' + (tx + 10) + 'px,' + (ty + 14) + 'px,0) rotate(-18deg) scale(1.04)';
       setTimeout(function () {
