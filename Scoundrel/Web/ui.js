@@ -764,11 +764,7 @@
   }
 
   /* ---------- an occasional bat flitting across the room ---------- */
-  var BAT_SVG = '<svg viewBox="0 0 100 44" aria-hidden="true"><g fill="#0d0b0a">' +
-    '<path class="wl" d="M48 22 C40 10 26 6 4 12 C12 14 14 18 12 22 C18 20 22 22 24 27 C28 23 32 24 34 29 C38 24 43 24 48 26 Z"/>' +
-    '<path class="wr" d="M52 22 C60 10 74 6 96 12 C88 14 86 18 88 22 C82 20 78 22 76 27 C72 23 68 24 66 29 C62 24 57 24 52 26 Z"/>' +
-    '<ellipse cx="50" cy="24" rx="5" ry="7"/><path d="M46 18 L45 12 L48 16 Z M54 18 L55 12 L52 16 Z"/>' +
-    '<circle cx="48" cy="21" r=".9" fill="#ff5a3c"/><circle cx="52" cy="21" r=".9" fill="#ff5a3c"/></g></svg>';
+  var BAT_HTML = '<i class="batimg"></i>';
   function startBats() {
     var box = $('bats');
     if (!box) return;
@@ -778,7 +774,7 @@
       if (!document.hidden && !state.over && !box.childElementCount) {
         var w = box.clientWidth || 390, h = box.clientHeight || 300, ltr = Math.random() < .5;
         var size = r(60, 95), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
-        var b = el('<div class="bat"><div class="bob">' + BAT_SVG + '</div></div>');
+        var b = el('<div class="bat"><div class="bob">' + BAT_HTML + '</div></div>');
         b.style.setProperty('--bw', size.toFixed(0) + 'px');
         b.style.setProperty('--x0', (ltr ? -size - 10 : w + 10) + 'px');
         b.style.setProperty('--x1', (ltr ? w + 10 : -size - 10) + 'px');
@@ -787,6 +783,7 @@
         b.style.setProperty('--ym', ((y0 + y1) / 2 + r(-40, 40)).toFixed(0) + 'px');
         b.style.setProperty('--sx', ltr ? '1' : '-1');
         b.style.setProperty('--bt', r(3.2, 5.5).toFixed(1) + 's');
+        b.style.setProperty('--flap', r(.42, .6).toFixed(2) + 's');
         b.style.setProperty('--bo', r(.55, .85).toFixed(2));
         b.addEventListener('animationend', function (e) { if (e.target === b) b.remove(); });
         box.appendChild(b);

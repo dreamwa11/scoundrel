@@ -63,10 +63,13 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .bats { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .72); z-index: -1; overflow: hidden; pointer-events: none; }
 .bat { position: absolute; left: 0; top: 0; width: var(--bw, 34px); will-change: transform; animation: batfly var(--bt, 4.5s) linear forwards; }
 .bat .bob { animation: batbob .9s ease-in-out infinite alternate; }
-.bat svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 0 2px rgba(0,0,0,.6)); }
-.bat .wl, .bat .wr { animation: batflap .16s ease-in-out infinite alternate; }
-.bat .wl { transform-origin: 48px 22px; } .bat .wr { transform-origin: 52px 22px; }
-@keyframes batflap { from { transform: scaleY(1); } to { transform: scaleY(-.35); } }
+.bat .batimg {
+  display: block; width: 100%; aspect-ratio: 260 / 150;
+  background: url('assets/ui/bat.webp') 0 0 / 600% 100% no-repeat;
+  animation: batflap var(--flap, .5s) steps(6) infinite;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.45));
+}
+@keyframes batflap { from { background-position: 0% 0; } to { background-position: 120% 0; } }
 @keyframes batbob { from { transform: translateY(-10px); } to { transform: translateY(10px); } }
 @keyframes batfly {
   0%   { transform: translate(var(--x0), var(--y0)) scale(var(--sx), 1); opacity: 0; }

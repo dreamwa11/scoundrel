@@ -1,5 +1,5 @@
 /* Offline cache for the browser / home-screen version. Not used inside the iOS app. */
-var CACHE = 'scoundrel-v51';
+var CACHE = 'scoundrel-v52';
 var FILES = [
   './',
   'art.js',
@@ -37,6 +37,7 @@ var FILES = [
   'assets/fonts/Astloch.ttf',
   'assets/fonts/PirataOne.ttf',
   'assets/fonts/SpaceGrotesk.ttf',
+  'assets/ui/bat.webp',
   'assets/ui/cardback.svg',
   'assets/ui/fog.svg',
   'assets/ui/hero.webp',
