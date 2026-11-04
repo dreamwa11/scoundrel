@@ -777,7 +777,7 @@
     function fly() {
       if (!document.hidden && !state.over && !box.childElementCount) {
         var w = box.clientWidth || 390, h = box.clientHeight || 300, ltr = Math.random() < .5;
-        var size = r(22, 40), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
+        var size = r(60, 95), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
         var b = el('<div class="bat"><div class="bob">' + BAT_SVG + '</div></div>');
         b.style.setProperty('--bw', size.toFixed(0) + 'px');
         b.style.setProperty('--x0', (ltr ? -size - 10 : w + 10) + 'px');

@@ -67,7 +67,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .bat .wl, .bat .wr { animation: batflap .16s ease-in-out infinite alternate; }
 .bat .wl { transform-origin: 48px 22px; } .bat .wr { transform-origin: 52px 22px; }
 @keyframes batflap { from { transform: scaleY(1); } to { transform: scaleY(-.35); } }
-@keyframes batbob { from { transform: translateY(-6px); } to { transform: translateY(6px); } }
+@keyframes batbob { from { transform: translateY(-10px); } to { transform: translateY(10px); } }
 @keyframes batfly {
   0%   { transform: translate(var(--x0), var(--y0)) scale(var(--sx), 1); opacity: 0; }
   8%   { opacity: var(--bo, .8); }
