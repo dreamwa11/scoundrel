@@ -60,6 +60,21 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 @keyframes fogdrift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
 @keyframes fogdrift2 { from { transform: translate3d(-50%,0,0) scaleY(-1); } to { transform: translate3d(0,0,0) scaleY(-1); } }
 @media (prefers-reduced-motion: reduce) { .fog i, .fog.on { animation: none; } }
+.bats { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .72); z-index: -1; overflow: hidden; pointer-events: none; }
+.bat { position: absolute; left: 0; top: 0; width: var(--bw, 34px); will-change: transform; animation: batfly var(--bt, 4.5s) linear forwards; }
+.bat .bob { animation: batbob .9s ease-in-out infinite alternate; }
+.bat svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 0 2px rgba(0,0,0,.6)); }
+.bat .wl, .bat .wr { animation: batflap .16s ease-in-out infinite alternate; }
+.bat .wl { transform-origin: 48px 22px; } .bat .wr { transform-origin: 52px 22px; }
+@keyframes batflap { from { transform: scaleY(1); } to { transform: scaleY(-.35); } }
+@keyframes batbob { from { transform: translateY(-6px); } to { transform: translateY(6px); } }
+@keyframes batfly {
+  0%   { transform: translate(var(--x0), var(--y0)) scale(var(--sx), 1); opacity: 0; }
+  8%   { opacity: var(--bo, .8); }
+  50%  { transform: translate(calc((var(--x0) + var(--x1)) / 2), var(--ym)) scale(var(--sx), 1); }
+  92%  { opacity: var(--bo, .8); }
+  100% { transform: translate(var(--x1), var(--y1)) scale(var(--sx), 1); opacity: 0; }
+}
 .sparks { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--bgh, 60%) * .8); z-index: -1; overflow: hidden; pointer-events: none; }
 .spark {
   position: absolute; width: var(--s, 2px); height: var(--s, 2px); border-radius: 50%;
