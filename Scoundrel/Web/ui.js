@@ -773,19 +773,26 @@
     function fly() {
       if (!document.hidden && !state.over && !box.childElementCount) {
         var w = box.clientWidth || 390, h = box.clientHeight || 300, ltr = Math.random() < .5;
-        var size = r(46, 72), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
-        var b = el('<div class="bat"><div class="bob">' + (Math.random() < .5 ? BAT_HTML : BAT_HTML.replace('batimg', 'batimg v2')) + '</div></div>');
-        b.style.setProperty('--bw', size.toFixed(0) + 'px');
-        b.style.setProperty('--x0', (ltr ? -size - 10 : w + 10) + 'px');
-        b.style.setProperty('--x1', (ltr ? w + 10 : -size - 10) + 'px');
-        b.style.setProperty('--y0', y0.toFixed(0) + 'px');
-        b.style.setProperty('--y1', y1.toFixed(0) + 'px');
-        b.style.setProperty('--ym', ((y0 + y1) / 2 + r(-40, 40)).toFixed(0) + 'px');
-        b.style.setProperty('--sx', ltr ? '1' : '-1');
-        b.style.setProperty('--bt', r(1.1, 1.9).toFixed(1) + 's');
+        var v2 = Math.random() < .5, size = r(46, 72);
+        var bh = size * (v2 ? 198 : 309) / 260 + 24;          /* sprite height + bob + shadow */
+        var tb = document.querySelector('.table'), floor = tb ? tb.getBoundingClientRect().top - box.getBoundingClientRect().top : h;
+        var top = 6, bot = Math.max(top + 1, Math.min(h, floor) - bh);
+        var y0 = r(top, bot), y1 = r(top, bot), ym = Math.max(top, Math.min(bot, (y0 + y1) / 2 + r(-40, 40)));
+        var off = size + 40;                                 /* start and end fully off-screen */
+        var x0 = ltr ? -off : w + 40, x1 = ltr ? w + 40 : -off, sx = ltr ? 1 : -1;
+        var b = el('<div class="bat"><div class="bob">' + (v2 ? BAT_HTML.replace('batimg', 'batimg v2') : BAT_HTML) + '</div></div>');
+        b.style.width = size.toFixed(0) + 'px';
+        b.style.transform = 'translate(' + x0 + 'px,' + y0 + 'px) scale(' + sx + ',1)';
         b.style.setProperty('--flap', r(.26, .36).toFixed(2) + 's');
-        b.addEventListener('animationend', function (e) { if (e.target === b) b.remove(); });
         box.appendChild(b);
+        var dur = r(1100, 1900);
+        var anim = b.animate([
+          { transform: 'translate(' + x0 + 'px,' + y0 + 'px) scale(' + sx + ',1)' },
+          { transform: 'translate(' + ((x0 + x1) / 2) + 'px,' + ym + 'px) scale(' + sx + ',1)' },
+          { transform: 'translate(' + x1 + 'px,' + y1 + 'px) scale(' + sx + ',1)' }
+        ], { duration: dur, easing: 'linear', fill: 'forwards' });
+        anim.onfinish = function () { b.remove(); };
+        setTimeout(function () { if (b.isConnected) b.remove(); }, dur + 1500);
       }
       setTimeout(fly, r(18000, 50000));
     }
