@@ -774,7 +774,7 @@
       if (!document.hidden && !state.over && !box.childElementCount) {
         var w = box.clientWidth || 390, h = box.clientHeight || 300, ltr = Math.random() < .5;
         var size = r(60, 95), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
-        var b = el('<div class="bat"><div class="bob">' + BAT_HTML + '</div></div>');
+        var b = el('<div class="bat"><div class="bob">' + (Math.random() < .5 ? BAT_HTML : BAT_HTML.replace('batimg', 'batimg v2')) + '</div></div>');
         b.style.setProperty('--bw', size.toFixed(0) + 'px');
         b.style.setProperty('--x0', (ltr ? -size - 10 : w + 10) + 'px');
         b.style.setProperty('--x1', (ltr ? w + 10 : -size - 10) + 'px');

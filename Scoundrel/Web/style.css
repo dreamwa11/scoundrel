@@ -70,6 +70,8 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,.45));
 }
 @keyframes batflap { from { background-position: 0% 0; } to { background-position: 120% 0; } }
+.bat .batimg.v2 { aspect-ratio: 260 / 196; background-image: url('assets/ui/bat2.webp'); background-size: 400% 100%; animation-name: batflap4; animation-timing-function: steps(4); }
+@keyframes batflap4 { from { background-position: 0% 0; } to { background-position: 133.333% 0; } }
 @keyframes batbob { from { transform: translateY(-10px); } to { transform: translateY(10px); } }
 @keyframes batfly {
   0%   { transform: translate(var(--x0), var(--y0)) scale(var(--sx), 1); opacity: 0; }
