@@ -67,7 +67,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   display: block; width: 100%; aspect-ratio: 260 / 309;
   background: url('assets/ui/bat.webp') 0 0 / 400% 100% no-repeat;
   animation: batflap var(--flap, .4s) steps(4) infinite;
-  filter: brightness(.72) contrast(1.05) drop-shadow(0 2px 3px rgba(0,0,0,.55));
+  filter: brightness(.56) contrast(1.08) drop-shadow(0 2px 3px rgba(0,0,0,.55));
 }
 @keyframes batflap { from { background-position: 0% 0; } to { background-position: 133.333% 0; } }
 .bat .batimg.v2 { aspect-ratio: 260 / 198; background-image: url('assets/ui/bat2.webp'); }

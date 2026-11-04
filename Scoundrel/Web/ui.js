@@ -773,7 +773,7 @@
     function fly() {
       if (!document.hidden && !state.over && !box.childElementCount) {
         var w = box.clientWidth || 390, h = box.clientHeight || 300, ltr = Math.random() < .5;
-        var size = r(60, 95), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
+        var size = r(46, 72), y0 = h * r(.12, .7), y1 = h * r(.1, .7);
         var b = el('<div class="bat"><div class="bob">' + (Math.random() < .5 ? BAT_HTML : BAT_HTML.replace('batimg', 'batimg v2')) + '</div></div>');
         b.style.setProperty('--bw', size.toFixed(0) + 'px');
         b.style.setProperty('--x0', (ltr ? -size - 10 : w + 10) + 'px');
@@ -782,8 +782,8 @@
         b.style.setProperty('--y1', y1.toFixed(0) + 'px');
         b.style.setProperty('--ym', ((y0 + y1) / 2 + r(-40, 40)).toFixed(0) + 'px');
         b.style.setProperty('--sx', ltr ? '1' : '-1');
-        b.style.setProperty('--bt', r(1.6, 2.6).toFixed(1) + 's');
-        b.style.setProperty('--flap', r(.32, .44).toFixed(2) + 's');
+        b.style.setProperty('--bt', r(1.1, 1.9).toFixed(1) + 's');
+        b.style.setProperty('--flap', r(.26, .36).toFixed(2) + 's');
         b.addEventListener('animationend', function (e) { if (e.target === b) b.remove(); });
         box.appendChild(b);
       }
