@@ -782,9 +782,8 @@
         b.style.setProperty('--y1', y1.toFixed(0) + 'px');
         b.style.setProperty('--ym', ((y0 + y1) / 2 + r(-40, 40)).toFixed(0) + 'px');
         b.style.setProperty('--sx', ltr ? '1' : '-1');
-        b.style.setProperty('--bt', r(3.2, 5.5).toFixed(1) + 's');
-        b.style.setProperty('--flap', r(.42, .6).toFixed(2) + 's');
-        b.style.setProperty('--bo', r(.55, .85).toFixed(2));
+        b.style.setProperty('--bt', r(1.6, 2.6).toFixed(1) + 's');
+        b.style.setProperty('--flap', r(.32, .44).toFixed(2) + 's');
         b.addEventListener('animationend', function (e) { if (e.target === b) b.remove(); });
         box.appendChild(b);
       }
