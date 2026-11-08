@@ -48,4 +48,4 @@ Haptics only work in the app; browsers fall back to vibration where supported, w
 ## Credits
 
 - Scoundrel © 2011 Zach Gage and Kurt Bieg.
-- Fonts: Astloch, Pirata One and Space Grotesk, SIL Open Font License.
+- Fonts: Astloch, Grenze and Space Grotesk, SIL Open Font License.
