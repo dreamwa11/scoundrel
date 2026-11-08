@@ -134,7 +134,7 @@
           A.icon('sword') + (p.weapon === null ? '–' : p.weapon) + '</button></div>';
     }
     if (card.type === 'potion') {
-      if (state.potionUsed) return '<div class="chips"><button class="chip warn" data-mode="auto" aria-label="Discard potion">wasted</button></div>';
+      if (state.potionUsed) return '<div class="chips"><button class="chip warn" data-mode="auto" aria-label="Discard potion">waste</button></div>';
       var heal = Math.min(state.maxHp, state.hp + card.value) - state.hp;
       return '<div class="chips"><button class="chip good" data-mode="auto" aria-label="Drink potion">' + A.icon('heart') + '+' + heal + '</button></div>';
     }
