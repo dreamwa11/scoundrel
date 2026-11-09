@@ -448,12 +448,12 @@ function drawMenu() {
 }
 
 const LESSONS = [
-  ['You are a scoundrel delving into a dungeon built from a deck of 44 cards. Clear every card while staying alive.', [0x4C, 0x15, 0x26]],
-  ['Each room shows 4 cards. Once you have handled 3, the room refills from the deck. The card you left behind stays.', [0x02, 0x11, 0x23]],
-  ['Monsters hit for their number. Fight bare-handed and take it all, or use your weapon and take only the difference.', [0x07, 0x13]],
-  ['Weapons dull: once it has a kill, a weapon only hits monsters equal to or weaker than its last kill.', [0x09, 0x17, 0x4B]],
-  ['Potions heal up to your maximum health. Only one per room counts; a second is wasted.', [0x21, 0x27]],
-  ['Before touching a full room you may flee: its cards go to the bottom of the deck. Never two rooms in a row.', []],
+  'You are a scoundrel delving into a dungeon built from a deck of 44 cards. Clear every card while staying alive.',
+  'Each room shows 4 cards. Once you have handled 3, the room refills from the deck. The card you left behind stays where it was.',
+  'Monsters hit for their number. Fight bare-handed and take it all, or use your weapon and take only the difference.',
+  'Weapons dull: once it has a kill, a weapon only hits monsters equal to or weaker than its last kill.',
+  'Potions heal up to your maximum health. Only one per room counts; a second is wasted.',
+  'Before you touch a full room you may flee with this button: its cards go to the bottom of the deck. Never two rooms in a row.',
 ];
 function wrap(text, f, width) {
   ctx.font = fontOf(f);
@@ -465,19 +465,89 @@ function wrap(text, f, width) {
   if (line) out.push(line);
   return out;
 }
+let lightPat = null;
+function light() {
+  if (!lightPat) {
+    const p = document.createElement('canvas'); p.width = p.height = 2;
+    const pc = p.getContext('2d'); pc.fillStyle = '#fff'; pc.fillRect(0, 0, 2, 2); pc.fillStyle = '#000'; pc.fillRect(0, 0, 1, 1);
+    lightPat = ctx.createPattern(p, 'repeat');
+  }
+  return lightPat;
+}
+// The examples are pictures: nothing on them is registered as a button.
+function chipArt(x, y, w, h, label, art, loud) {
+  fill(x, y, w, h, loud ? '#000' : '#fff', 8); stroke(x, y, w, h, '#000', 2, 8);
+  const tw = widthOf(label, 'body'), ix = x + (w - 28 - tw) / 2;
+  icon(art, ix, y + (h - 24) / 2, loud);
+  say(ix + 28, y, tw + 6, h, label, 'body', 'left', loud);
+}
+function monsterWithChoices(x, y, w, h, c, fist, weapon) {
+  face(x, y, w, h, c, 64);
+  const half = (w - 4) / 2, cy = y + h + 6, fistBetter = weapon < 0 || fist <= weapon;
+  chipArt(x, cy, half, CHIP_H, String(fist), 'icon_hand_24', weapon >= 0 && fistBetter);
+  if (weapon < 0) spentChip(x + w - half, cy, half, CHIP_H);
+  else chipArt(x + w - half, cy, half, CHIP_H, String(weapon), 'icon_sword_24', !fistBetter);
+}
+const caption = (cx, y, t) => say(cx - 120, y, 240, 19, t, 'small');
+const EXAMPLES = [
+  (ax, ay, aw) => {
+    const cards = [mk(MON, 12, 1), mk(WPN, 7), mk(POT, 8)], labels = ['MONSTER', 'WEAPON', 'POTION'];
+    const w = 132, h = 184, gap = 14; let x = ax + (aw - 3 * w - 2 * gap) / 2;
+    for (let i = 0; i < 3; ++i) { face(x, ay, w, h, cards[i], 96); caption(x + w / 2, ay + h + 10, labels[i]); x += w + gap; }
+  },
+  (ax, ay, aw) => {
+    const w = 104, h = 132, gap = 8, left = ax + (aw - 4 * w - 3 * gap) / 2;
+    const fresh = [mk(MON, 3), mk(POT, 5), mk(WPN, 3), mk(MON, 9, 1)];
+    for (let row = 0; row < 2; ++row) {
+      const y = ay + row * (h + 44);
+      for (let s = 0; s < 4; ++s) {
+        const x = left + s * (w + gap);
+        if (row === 0 && s !== 2) emptySlot(x, y, w, h); else face(x, y, w, h, fresh[s], 48);
+      }
+      caption(ax + aw / 2, y + h + 8, row === 0 ? '3 HANDLED, ONE LEFT BEHIND' : '3 NEW CARDS, THE OLD ONE STAYS');
+    }
+  },
+  (ax, ay, aw) => {
+    const w = 120, h = 164, gap = 56, x = ax + (aw - 2 * w - gap) / 2;
+    face(x, ay, w, h, mk(WPN, 5), 64); caption(x + w / 2, ay + h + 14, 'YOUR WEAPON');
+    const mx = x + w + gap;
+    monsterWithChoices(mx, ay, w, h, mk(MON, 8), 8, 3);
+    caption(mx + w / 2, ay + h + CHIP_H + 14, 'HANDS 8, WEAPON 3');
+  },
+  (ax, ay, aw) => {
+    const w = 112, h = 156, gap = 20; let x = ax + (aw - 3 * w - 2 * gap) / 2;
+    face(x, ay, w, h, mk(WPN, 9), 64); face(x + 6, ay + 40, w - 6, h - 32, mk(MON, 7), 48);
+    const capY = ay + h + CHIP_H + 14;
+    caption(x + w / 2, capY, 'HITS ≤ 7'); x += w + gap;
+    monsterWithChoices(x, ay, w, h, mk(MON, 6), 6, 0); caption(x + w / 2, capY, '6: IT CAN HIT'); x += w + gap;
+    monsterWithChoices(x, ay, w, h, mk(MON, 11, 1), 11, -1); caption(x + w / 2, capY, 'J: HANDS ONLY');
+  },
+  (ax, ay, aw, ah) => {
+    const gap = 10, h = Math.min(128, (ah - 2 * gap) / 3), w = 128, left = ax + (aw - 3 * w - 2 * gap) / 2;
+    for (let i = 0; i < 9; ++i) face(left + (i % 3) * (w + gap), ay + Math.floor(i / 3) * (h + gap), w, h, mk(POT, i + 2), 48);
+  },
+  (ax, ay, aw) => {
+    const w = 300, bx = ax + (aw - w) / 2, by = ay + 30;
+    fill(bx, by, w, PILL_H, light(), 10); stroke(bx, by, w, PILL_H, grey(), 2, 10);
+    const tw = widthOf('Flee room', 'large'), ix = bx + (w - 32 - tw) / 2;
+    icon('icon_flee_24', ix, by + (PILL_H - 24) / 2);
+    say(ix + 32, by, tw + 4, PILL_H, 'Flee room', 'large', 'left');
+    caption(bx + w / 2, by + PILL_H + 12, 'AT THE FOOT OF THE TABLE');
+  },
+];
 function drawHowTo() {
   title('How to play');
   const last = howPage + 1 >= LESSONS.length;
-  const py = H - MARGIN - PILL_H;
-  pill(MARGIN, py, W - 2 * MARGIN, PILL_H, last ? 'Into the dungeon' : 'Next', true, () => {
+  const py = H - MARGIN - PILL_H, half = (W - 2 * MARGIN - 12) / 2;
+  pill(MARGIN, py, half, PILL_H, 'Back', false, () => { if (howPage > 0) { howPage--; render(); } else go('menu'); });
+  pill(W - MARGIN - half, py, half, PILL_H, last ? 'Into the dungeon' : 'Next', true, () => {
     if (!last) { howPage++; render(); } else if (g && !g.over) go('board'); else newGame();
   });
   say(MARGIN, py - 12 - 28, W - 2 * MARGIN, 28, `${howPage + 1} of ${LESSONS.length}`, 'small');
-  const [text, cards] = LESSONS[howPage];
-  wrap(text, 'large', W - 2 * MARGIN).forEach((l, i) => say(MARGIN, 110 + i * 34, W - 2 * MARGIN, 30, l, 'large'));
-  const w = 132, h = 190, gap = 14, total = cards.length * w + (cards.length - 1) * gap;
-  let x = (W - total) / 2;
-  for (const c of cards) { face(x, 104 + 230, w, h, c, 96); x += w + gap; }
+  const top = 104;
+  wrap(LESSONS[howPage], 'large', W - 2 * MARGIN).slice(0, 4).forEach((l, i) => say(MARGIN, top + 6 + i * 29, W - 2 * MARGIN, 29, l, 'large'));
+  const ay = top + 140, ah = py - 12 - 28 - 4 - ay;
+  EXAMPLES[howPage](MARGIN, ay, W - 2 * MARGIN, ah);
 }
 function drawConfirm() {
   title('Abandon this dungeon?');
