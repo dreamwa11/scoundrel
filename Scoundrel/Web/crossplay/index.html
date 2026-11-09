@@ -241,10 +241,14 @@ function face(x, y, w, h, c, art) {
   fill(x, y, w, h, '#fff', R); stroke(x, y, w, h, '#000', 2, R);
   icon(kindOf(c) === MON ? 'icon_skull_24' : kindOf(c) === WPN ? 'icon_sword_24' : 'icon_heart_24', x + 7, y + 8);
   say(x + w - 8 - 64, y + 4, 64, 34, rank(c), 'value', 'right');
-  const nameH = 19, nameTop = y + h - nameH - 4, room = nameTop - y - 38;
+  const nameH = 19, nameTop = y + h - nameH - 4;
+  let room = nameTop - y - 38;
+  // Too short for both (kills stacked on a weapon): keep the picture, drop the name.
+  const named = room >= art - 2;
+  if (!named) room = h - 4 - 38;
   const artTop = y + 38 + (room > art ? (room - art) / 2 : 0);
   icon(`icon_${artName(c)}_${art}`, x + w / 2 - art / 2, artTop);
-  say(x + 2, nameTop, w - 4, nameH, cardName(c).toUpperCase(), 'small');
+  if (named) say(x + 2, nameTop, w - 4, nameH, cardName(c).toUpperCase(), 'small');
 }
 function emptySlot(x, y, w, h) {
   ctx.fillStyle = '#000';
