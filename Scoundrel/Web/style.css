@@ -1,5 +1,5 @@
 @font-face { font-family: 'Astloch'; src: url('assets/fonts/Astloch.ttf') format('truetype'); font-display: block; }
-@font-face { font-family: 'PirataOne'; src: url('assets/fonts/PirataOne.ttf') format('truetype'); font-display: block; }
+@font-face { font-family: 'GermaniaOne'; src: url('assets/fonts/GermaniaOne.ttf') format('truetype'); font-display: block; }
 @font-face { font-family: 'SpaceGrotesk'; src: url('assets/fonts/SpaceGrotesk.ttf') format('truetype'); font-weight: 300 700; font-display: block; }
 
 :root {
@@ -149,7 +149,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .deckinfo { font-size: 15px; font-weight: 600; color: var(--ink); text-shadow: 0 1px 1px #000; white-space: nowrap; }
 .deckinfo .icon { margin-right: 4px; }
 .deckinfo .mons { color: var(--ink-dim); margin-left: 6px; }
-.roomtitle { font-family: 'PirataOne', 'Astloch', serif; font-size: 28px; letter-spacing: .5px; text-shadow: 0 2px 6px #000; }
+.roomtitle { font-family: 'GermaniaOne', 'Astloch', serif; font-size: 28px; letter-spacing: .5px; text-shadow: 0 2px 6px #000; }
 .iconbtn { justify-self: end; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 10px; background: rgba(0,0,0,.35); font-size: 22px; }
 
 .scene { flex: 1 1 auto; min-height: 20px; }
@@ -192,9 +192,9 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .card .name { z-index: 2; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
 .card .corner { position: absolute; top: 9px; left: 10px; width: calc(var(--cw) * .22); height: calc(var(--cw) * .22); color: var(--ink); }
 .card .corner .icon { width: 100%; height: 100%; }
-.card .val { position: absolute; top: 7px; right: 11px; font-family: 'PirataOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); line-height: 1; color: var(--ink); text-shadow: 0 1px 0 #000; }
+.card .val { position: absolute; top: 7px; right: 11px; font-family: 'GermaniaOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); line-height: 1; color: var(--ink); text-shadow: 0 1px 0 #000; }
 .card .name { position: absolute; bottom: 5px; left: 0; right: 0; text-align: center; font-size: calc(var(--cw) * .115); letter-spacing: .5px; text-transform: uppercase; color: var(--ink-dim); }
-.card .val.face { font-family: 'PirataOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); top: 7px; }
+.card .val.face { font-family: 'GermaniaOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); top: 7px; }
 .card.potion .val, .card.potion .corner { color: #ff5a4f; }
 .card.weapon .val, .card.weapon .corner { color: var(--gold); }
 .card.monster.royal { --edge: var(--gold); }
@@ -298,7 +298,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 /* deck pile */
 .pile { position: relative; width: var(--cw); height: var(--ch); }
 .pile .card { position: absolute; top: 0; left: 0; }
-.pile .count { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); z-index: 10; min-width: 38px; padding: 1px 10px; text-align: center; border-radius: 12px; background: #120d09; border: 1px solid var(--gold); color: #ffe7a8; font-family: 'PirataOne', 'Astloch', serif; font-size: 24px; line-height: 1.1; }
+.pile .count { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); z-index: 10; min-width: 38px; padding: 1px 10px; text-align: center; border-radius: 12px; background: #120d09; border: 1px solid var(--gold); color: #ffe7a8; font-family: 'GermaniaOne', 'Astloch', serif; font-size: 24px; line-height: 1.1; }
 
 /* hero */
 .hero {
@@ -377,7 +377,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .sheet h2 { margin: 0 0 6px; font-family: 'Astloch', serif; font-size: 32px; text-align: center; font-weight: 700; color: #f4e2bd; letter-spacing: 1px; }
 .sheet.scroll { max-height: 100%; }
 .rules-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 4px; font-size: 15px; line-height: 1.45; color: #e2dac7; -webkit-user-select: text; user-select: text; }
-.rules-body h3 { font-family: 'PirataOne', 'Astloch', serif; font-size: 22px; color: var(--gold); margin: 16px 0 4px; letter-spacing: 1px; }
+.rules-body h3 { font-family: 'GermaniaOne', 'Astloch', serif; font-size: 22px; color: var(--gold); margin: 16px 0 4px; letter-spacing: 1px; }
 .rules-body p { margin: 6px 0; }
 .rules-body ul { margin: 4px 0; padding-left: 20px; }
 .rules-body .lead { font-size: 16px; color: #f4ecd9; }
