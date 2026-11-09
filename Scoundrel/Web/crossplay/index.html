@@ -657,7 +657,17 @@ Promise.all([
 ]).then(() => {
   fit();
   if (g && !g.over) screen = 'board';
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    // The offline copy opens first; when a newer version has just been fetched
+    // and takes over, switch to it straight away instead of on the next launch.
+    const hadCopy = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadCopy || reloaded) return;
+      reloaded = true; persist(); location.reload();
+    });
+    navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
+  }
   // Ask the browser to keep the offline copy and the saves, not clear them to make room.
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
   render();
