@@ -362,11 +362,17 @@ function drawBoard() {
 
   d = deskRect(1);
   icon('icon_hero_96', d[0] + d[2] / 2 - 48, d[1] - 4);
-  const hp = Math.max(0, g.hp), big = String(hp), small = '/' + g.maxHp;
+  const hp = Math.max(0, g.hp), big = String(hp), small = String(g.maxHp);
+  // The slash is drawn, baseline to cap height: the gothic one hangs onto the bar.
+  const SW = 10, SG = 3;
   const bw = widthOf(big, 'big'), sw = widthOf(small, 'value');
-  const nx = d[0] + (d[2] - bw - sw - 2) / 2, ny = d[1] + 96;
+  const nx = d[0] + (d[2] - (bw + SG + SW + SG + sw)) / 2, ny = d[1] + 96;
   say(nx, ny, bw + 4, 44, big, 'big', 'left');
-  say(nx + bw + 2, ny + (capH('big') - capH('value')) / 2, sw + 4, 44, small, 'value', 'left');
+  const sTop = ny + (capH('big') - capH('value')) / 2, ink = capH('value'), base = Math.round(sTop + (44 + ink) / 2);
+  const sx = nx + bw + SG;
+  ctx.save(); ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.beginPath();
+  ctx.moveTo(sx + 1.5, base - 0.5); ctx.lineTo(sx + SW - 1.5, base - ink + 0.5); ctx.stroke(); ctx.restore();
+  say(sx + SW + SG, sTop, sw + 4, 44, small, 'value', 'left');
   const bx = d[0] + 6, by = d[1] + d[3] - 6, bwid = d[2] - 12;
   stroke(bx, by, bwid, 8, '#000', 1, 3);
   const filled = Math.floor(bwid * hp / g.maxHp);
@@ -491,7 +497,7 @@ function drawDeath() {
   say(fx, fy + 136, fw, 60, String(g.score), 'big');
   const rows = top + 380 + 10, left = monstersLeft(g);
   say(0, rows, W, 34, left === 1 ? '1 monster still in the dungeon.' : `${left} monsters still in the dungeon.`, 'large');
-  say(0, rows + 34, W, 34, result && result.newBest ? 'A new best score!' : `Best: ${store.best}`, 'large');
+  say(0, rows + 34, W, 34, result && result.newBest ? 'A new best score!' : `Best score: ${store.best}`, 'large');
   const y2 = H - MARGIN - PILL_H, y1 = y2 - 12 - PILL_H;
   pill(MARGIN, y1, W - 2 * MARGIN, PILL_H, 'Start another dungeon', true, () => newGame());
   pill(MARGIN, y2, W - 2 * MARGIN, PILL_H, 'Menu', false, () => go('menu'));
@@ -506,7 +512,7 @@ function drawSurvived() {
   say(x, t, lw + 4, 60, 'SCORE', 'small', 'left');
   say(x + lw + 12, t, nw + 4, 60, num, 'big', 'left');
   say(0, t + 60, W, 32, `Cleared in ${g.roomNo} rooms, ${g.hp} health left.`, 'large');
-  say(0, t + 92, W, 32, result && result.newBest ? 'A new best score!' : `Best: ${store.best}`, 'large');
+  say(0, t + 92, W, 32, result && result.newBest ? 'A new best score!' : `Best score: ${store.best}`, 'large');
   const y2 = H - MARGIN - PILL_H, y1 = y2 - 12 - PILL_H;
   pill(MARGIN, y1, W - 2 * MARGIN, PILL_H, 'Start another dungeon', true, () => newGame());
   pill(MARGIN, y2, W - 2 * MARGIN, PILL_H, 'Menu', false, () => go('menu'));
