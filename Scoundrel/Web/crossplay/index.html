@@ -525,8 +525,8 @@ function play(slot, mode) {
     const newBest = !store.hasBest || g.score > store.best;
     if (newBest) { store.hasBest = true; store.best = g.score; }
     result = { newBest };
-    // A death goes straight to its own screen; a survival waits on the table.
-    if (!g.won) { persist(); go('result'); return; }
+    // The end of a run goes straight to its own screen.
+    persist(); go('result'); return;
   }
   persist(); render();
 }
