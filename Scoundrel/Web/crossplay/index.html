@@ -491,7 +491,7 @@ function monsterWithChoices(x, y, w, h, c, fist, weapon) {
 const caption = (cx, y, t) => say(cx - 120, y, 240, 19, t, 'small');
 const EXAMPLES = [
   (ax, ay, aw) => {
-    const cards = [mk(MON, 14, 1), mk(WPN, 7), mk(POT, 8)], labels = ['MONSTER', 'WEAPON', 'POTION'];
+    const cards = [mk(MON, 4), mk(WPN, 7), mk(POT, 8)], labels = ['MONSTER', 'WEAPON', 'POTION'];
     const w = 132, h = 184, gap = 14; let x = ax + (aw - 3 * w - 2 * gap) / 2;
     for (let i = 0; i < 3; ++i) { face(x, ay, w, h, cards[i], 96); caption(x + w / 2, ay + h + 10, labels[i]); x += w + gap; }
   },
