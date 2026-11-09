@@ -150,6 +150,7 @@ function noteText(g) {
 const KEY = 'crossplay-scoundrel-v1';
 let store = { maxHp: 20, played: 0, survived: 0, hasBest: false, best: 0, game: null };
 try { const raw = localStorage.getItem(KEY); if (raw) store = Object.assign(store, JSON.parse(raw)); } catch (e) {}
+if (!(store.maxHp >= 20 && store.maxHp <= 50)) store.maxHp = 20;
 function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
 
 /* ---------------- drawing: the 480x800 panel, 1-bit ---------------- */
@@ -414,7 +415,7 @@ function drawMenu() {
   if (live) rows.push(['Back to the dungeon', '', () => go('board')]);
   rows.push(['New dungeon', '', () => (live && g.started) ? go('confirm') : newGame()]);
   rows.push(['How to play', '', () => { howPage = 0; go('howto'); }]);
-  rows.push(['Maximum health', `${store.maxHp} HP`, () => { store.maxHp = store.maxHp >= 30 ? 10 : store.maxHp + 5; save(); render(); }]);
+  rows.push(['Maximum health', `${store.maxHp} HP`, () => { store.maxHp = store.maxHp + 5 > 50 ? 20 : store.maxHp + 5; save(); render(); }]);
   const rowH = 60, rgap = 6, creditH = 30;
   const listH = rows.length * rowH + (rows.length - 1) * rgap;
   const bottom = H - MARGIN;
