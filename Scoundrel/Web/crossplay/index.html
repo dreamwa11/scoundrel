@@ -578,6 +578,8 @@ Promise.all([
   fit();
   if (g && !g.over) screen = 'board';
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+  // Ask the browser to keep the offline copy and the saves, not clear them to make room.
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
   render();
 });
 </script>
