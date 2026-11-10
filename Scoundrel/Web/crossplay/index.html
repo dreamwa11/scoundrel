@@ -78,7 +78,20 @@ function start(seed, maxHp) {
   for (let i = deck.length - 1; i > 0; --i) { const j = next() % (i + 1); [deck[i], deck[j]] = [deck[j], deck[i]]; }
   return { deck: deck.slice(ROOM), room: deck.slice(0, ROOM), hp: maxHp, maxHp, weapon: NO, weaponLast: -1, slain: [],
     resolved: 0, potionUsed: false, fledLast: false, started: false, roomNo: 1, over: false, won: false, score: 0,
-    lastAction: '', lastPotion: 0, note: 'new', noteCard: NO, noteAmount: 0 };
+    lastAction: '', lastPotion: 0, note: 'new', noteCard: NO, noteAmount: 0, look: next() >>> 24 };
+}
+// Which room picture room n shows: a random-looking run fixed per dungeon by
+// g.look, never the same twice in a row. Matches roomLook in ScoundrelCore.cpp.
+function roomLook(g, n, kinds) {
+  const look = (g.look || 0) >>> 0;
+  const mix = r => {
+    let h = (Math.imul((look + 1) >>> 0, 0x9E3779B1) ^ Math.imul(r >>> 0, 0x85EBCA6B)) >>> 0;
+    h = (h ^ (h >>> 15)) >>> 0; h = Math.imul(h, 0x2C1B3C6D) >>> 0; h = (h ^ (h >>> 12)) >>> 0;
+    return h;
+  };
+  let k = mix(1) % kinds;
+  for (let r = 2; r <= n; ++r) k = (k + 1 + mix(r) % (kinds - 1)) % kinds;
+  return k;
 }
 function refill(g) { for (let s = 0; s < ROOM && g.deck.length; ++s) if (g.room[s] === NO) g.room[s] = g.deck.shift(); }
 function checkEnd(g) {
@@ -293,7 +306,7 @@ function title(text) {
 function drawBoard() {
   // scene, top bar
   const top = TOP + 2;
-  icon(`scene_room${(g.roomNo - 1) % 4}`, 0, top);
+  icon(`scene_room${roomLook(g, g.roomNo, 4)}`, 0, top);
   fill(0, SCENE_BOTTOM, W, 2, '#000');
   let x = 12;
   const counter = (art, n) => {
