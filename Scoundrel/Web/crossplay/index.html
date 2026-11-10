@@ -451,6 +451,7 @@ const LESSONS = [
   'You are a scoundrel delving into a dungeon built from a deck of 44 cards. Clear every card while staying alive.',
   'Each room shows 4 cards. Once you have handled 3, the room refills from the deck. The card you left behind stays where it was.',
   'Monsters hit for their number. Fight bare-handed and take it all, or use your weapon and take only the difference.',
+  'Tap a card to play it: with your weapon if it can hit, else bare-handed. Tap a button under it to choose yourself, like bare hands to keep your weapon sharp.',
   'Weapons dull: once it has a kill, a weapon only hits monsters equal to or weaker than its last kill.',
   'Potions heal up to your maximum health. Only one per room counts; a second is wasted.',
   'Before you touch a full room you may flee with this button: its cards go to the bottom of the deck. Never two rooms in a row.',
@@ -481,8 +482,8 @@ function chipArt(x, y, w, h, label, art, loud) {
   icon(art, ix, y + (h - 24) / 2, loud);
   say(ix + 28, y, tw + 6, h, label, 'body', 'left', loud);
 }
-function monsterWithChoices(x, y, w, h, c, fist, weapon) {
-  face(x, y, w, h, c, 64);
+function monsterWithChoices(x, y, w, h, c, fist, weapon, art = 64) {
+  face(x, y, w, h, c, art);
   const half = (w - 4) / 2, cy = y + h + 6, fistBetter = weapon < 0 || fist <= weapon;
   chipArt(x, cy, half, CHIP_H, String(fist), 'icon_hand_24', weapon >= 0 && fistBetter);
   if (weapon < 0) spentChip(x + w - half, cy, half, CHIP_H);
@@ -513,6 +514,21 @@ const EXAMPLES = [
     const mx = x + w + gap;
     monsterWithChoices(mx, ay, w, h, mk(MON, 8), 8, 3);
     caption(mx + w / 2, ay + h + CHIP_H + 14, 'HANDS 8, WEAPON 3');
+  },
+  (ax, ay, aw) => {
+    // Where to tap: the card plays the black choice, a button plays its own.
+    const w = 130, h = 176, x = ax + (aw - w) / 2;
+    monsterWithChoices(x, ay, w, h, mk(MON, 8), 8, 3, 96);
+    const mx = x - 64, cardY = ay + h / 2, chipY = ay + h + 6 + CHIP_H / 2;
+    fill(mx + 24, cardY - 1, x - mx - 24, 3, '#000'); fill(mx + 24, chipY - 1, x - mx - 24, 3, '#000');
+    const mark = (cx, cy, n) => {
+      fill(cx - 17, cy - 17, 34, 34, '#fff', 17); stroke(cx - 17, cy - 17, 34, 34, '#000', 3, 17);
+      stroke(cx - 24, cy - 24, 48, 48, '#000', 2, 24); say(cx - 17, cy - 17, 34, 34, n, 'body');
+    };
+    mark(mx, cardY, '1'); mark(mx, chipY, '2');
+    const y = ay + h + CHIP_H + 40;
+    say(ax, y, aw, 30, '1  Tap the card: the black choice', 'large');
+    say(ax, y + 32, aw, 30, '2  Tap a button: your own choice', 'large');
   },
   (ax, ay, aw) => {
     const w = 112, h = 156, gap = 20; let x = ax + (aw - 3 * w - 2 * gap) / 2;
