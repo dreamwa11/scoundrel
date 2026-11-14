@@ -198,7 +198,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .card.potion .val, .card.potion .corner { color: #ff5a4f; }
 .card.weapon .val, .card.weapon .corner { color: var(--gold); }
 .card.weapon { --edge: var(--gold); }
-.card.potion { --edge: #ff8a80; }
+.card.potion { --edge: #ffb0a8; }
 /* hand-drawn wobbly outline */
 .card::before, .hero::before {
   content: ''; position: absolute; inset: 1.5px; z-index: 20; pointer-events: none;
