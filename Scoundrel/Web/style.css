@@ -197,7 +197,7 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
 .card .val.face { font-family: 'PirataOne', 'Astloch', serif; font-weight: 400; font-size: calc(var(--cw) * .33); top: 7px; }
 .card.potion .val, .card.potion .corner { color: #ff5a4f; }
 .card.weapon .val, .card.weapon .corner { color: var(--gold); }
-.card.weapon { --edge: var(--gold); }
+.card.weapon { --edge: #e8cc8a; }
 .card.potion { --edge: #ffb0a8; }
 /* hand-drawn wobbly outline */
 .card::before, .hero::before {
@@ -205,15 +205,6 @@ button { font: inherit; color: inherit; border: 0; background: none; padding: 0;
   border: 2.5px solid var(--edge); border-radius: 8px; filter: url(#wobble);
 }
 .card.empty::before { display: none; }
-.hero::before { display: none; }
-/* hero outline: dark gold on top fading to dark red at the bottom, still hand-drawn */
-.hero .hedge { position: absolute; inset: 1.5px; z-index: 20; pointer-events: none; filter: url(#wobble); }
-.hero .hedge i {
-  position: absolute; inset: 0; border-radius: 8px; padding: 2.5px;
-  background: linear-gradient(200deg, #8f6b22 0%, #6e3a17 45%, #5e1110 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-}
 .wstack > .card:not(.empty):first-child { rotate: var(--wtilt, -2deg); }
 .room .card { rotate: var(--tilt, 0deg); touch-action: none; -webkit-user-drag: none; }
 .card.drag {
