@@ -1,5 +1,5 @@
 /* Offline cache for the browser / home-screen version. Not used inside the iOS app. */
-var CACHE = 'scoundrel-v62';
+var CACHE = 'scoundrel-v57';
 var FILES = [
   './',
   'art.js',
@@ -35,7 +35,7 @@ var FILES = [
   'assets/cards/skeleton.webp',
   'assets/cards/wolf.webp',
   'assets/fonts/Astloch.ttf',
-  'assets/fonts/ScoundrelGothic.ttf',
+  'assets/fonts/PirataOne.ttf',
   'assets/fonts/SpaceGrotesk.ttf',
   'assets/ui/bat.webp',
   'assets/ui/bat2.webp',
@@ -58,7 +58,7 @@ self.addEventListener('install', function (e) {
 });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.filter(function (k) { return k.indexOf('scoundrel-v') === 0 && k !== CACHE; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
   }).then(function () { return self.clients.claim(); }));
 });
 self.addEventListener('fetch', function (e) {

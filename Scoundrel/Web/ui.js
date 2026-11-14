@@ -10,8 +10,6 @@
   var DIE_BGS = ['assets/bg/died1.webp', 'assets/bg/died2.webp'];
 
   var state, settings = { maxHp: S.DEFAULT_HP, haptics: true }, seenRules = false;
-  // Maximum health: 20 to 50, in steps of 5, as on the CrossPlay version.
-  function clampHp(n) { return Math.max(20, Math.min(50, Math.round(n / 5) * 5)); }
   var busy = false, currentBg = null, bgFront = 'A';
 
   /* ---------- persistence (localStorage + native bridge fallback) ---------- */
@@ -28,7 +26,7 @@
     try {
       var d = JSON.parse(raw);
       if (d.settings) {
-        settings.maxHp = clampHp(d.settings.maxHp || S.DEFAULT_HP);
+        settings.maxHp = d.settings.maxHp || S.DEFAULT_HP;
         settings.haptics = d.settings.haptics !== false;
       }
       seenRules = !!d.seenRules;
@@ -136,7 +134,7 @@
           A.icon('sword') + (p.weapon === null ? '–' : p.weapon) + '</button></div>';
     }
     if (card.type === 'potion') {
-      if (state.potionUsed) return '<div class="chips"><button class="chip warn" data-mode="auto" aria-label="Discard potion">waste</button></div>';
+      if (state.potionUsed) return '<div class="chips"><button class="chip warn" data-mode="auto" aria-label="Discard potion">wasted</button></div>';
       var heal = Math.min(state.maxHp, state.hp + card.value) - state.hp;
       return '<div class="chips"><button class="chip good" data-mode="auto" aria-label="Drink potion">' + A.icon('heart') + '+' + heal + '</button></div>';
     }
@@ -722,7 +720,7 @@
     }
     $('settings').addEventListener('click', function (e) {
       var step = e.target.closest('[data-step]');
-      if (step) { pendingHp = clampHp(pendingHp + parseInt(step.getAttribute('data-step'), 10)); $('hpOut').textContent = pendingHp; return; }
+      if (step) { pendingHp = Math.max(5, Math.min(50, pendingHp + parseInt(step.getAttribute('data-step'), 10))); $('hpOut').textContent = pendingHp; return; }
       var b = e.target.closest('[data-act]');
       if (b && b.getAttribute('data-act') === 'save') {
         settings.haptics = $('hapticsToggle').checked;

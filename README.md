@@ -4,7 +4,6 @@ An offline iPhone version of **Scoundrel**, the solo dungeon-crawl card game by 
 Plays with a fixed set of house rules (see How to play in the game).
 
 - `Scoundrel/Web/` – the game (HTML/CSS/JS, fonts, backgrounds). It runs on its own in any browser too.
-- `Scoundrel/Web/crossplay/` – the black-and-white CrossPlay (M5Stack PaperMono) version as one offline page. Open `crossplay/` on the Pages site and use *Add to Home Screen*.
 - `Scoundrel/*.swift` – a small native app that runs the game full-screen, offline, with real iPhone haptics and save/resume.
 - `project.yml` – XcodeGen spec; the Xcode project is generated in the cloud.
 - `.github/workflows/build.yml` – builds the app on GitHub's Macs. No Mac needed.
@@ -49,4 +48,4 @@ Haptics only work in the app; browsers fall back to vibration where supported, w
 ## Credits
 
 - Scoundrel © 2011 Zach Gage and Kurt Bieg.
-- Fonts: Astloch, Scoundrel Gothic (a thinned Germania One) and Space Grotesk, SIL Open Font License.
+- Fonts: Astloch, Pirata One and Space Grotesk, SIL Open Font License.
