@@ -245,7 +245,7 @@ function card(x, y, w, h, c, look = {}) {
   fill(x, y, w, h, '#fff', R); stroke(x, y, w, h, '#000', look.selected ? 5 : 2, R);
   if (look.tight) say(x + w - 3 - 64, y + 4, 64, 30, String(valueOf(c)), 'large', 'right');
   else say(x + w - 8 - 64, y + 4, 64, 34, String(valueOf(c)), 'value', 'right');
-  const art = h >= 160 ? 96 : h >= 112 ? 64 : 48;
+  const art = h >= 160 ? 64 : 48;
   const nameH = 19, nameTop = y + h - nameH - 4, room = nameTop - y - 36;
   icon(`icon_lobo_${SUITS[suitOf(c)]}_${art}`, x + (w - art) / 2, y + 36 + (room > art ? (room - art) / 2 : 0));
   say(x + 2, nameTop, w - 4, nameH, SUITNAME[suitOf(c)], 'small');
@@ -380,23 +380,20 @@ function drawTable() {
   // score bar
   let x = 12;
   const counter = (art, n) => { icon(art, x, TOPBAR / 2 - 12); const tw = widthOf(String(n), 'large'); say(x + 28, 0, tw + 4, TOPBAR, String(n), 'large', 'left'); x += 28 + tw + 14; };
-  counter('icon_lobo_you_24', m.youScore); counter('icon_lobo_wolf_24', m.wolfScore);
+  counter('icon_lobo_wolf_24', m.wolfScore); counter('icon_lobo_you_24', m.youScore);
   say(0, 0, W, TOPBAR, `Hand ${m.hand}`, 'value');
   const mx = W - 12 - 46, my = TOPBAR / 2 - 23;
   fill(mx, my, 46, 46, '#fff', 8); stroke(mx, my, 46, 46, '#000', 2, 8); icon('icon_lobo_menu_24', mx + 11, my + 11);
   hit(mx, my, 46, 46, () => { persist(); go('menu'); });
   fill(0, TOPBAR, W, 2, '#000');
-  // piles
+  // the deck, face up, between the rows; the played pile is not shown
+  const DY = (WOLF_ROW + YOU_ROW) / 2;
   if (m.deck.length) {
-    if (m.deck.length > 1) back(PILE_X + 3, WOLF_ROW - 3, PILE_W, CH);
-    card(PILE_X, WOLF_ROW, PILE_W, CH, m.deck[m.deck.length - 1]);
-    badge(PILE_X, WOLF_ROW, PILE_W, CH, String(m.deck.length));
-  } else { emptySlot(PILE_X, WOLF_ROW, PILE_W, CH); say(PILE_X, WOLF_ROW, PILE_W, CH, 'EMPTY', 'small'); }
-  if (m.played.length) {
-    if (m.played.length > 1) back(PILE_X + 3, YOU_ROW - 3, PILE_W, CH);
-    back(PILE_X, YOU_ROW, PILE_W, CH); badge(PILE_X, YOU_ROW, PILE_W, CH, String(m.played.length));
-  } else { emptySlot(PILE_X, YOU_ROW, PILE_W, CH); say(PILE_X, YOU_ROW, PILE_W, CH, 'PLAYED', 'small'); }
-  hit(PILE_X, WOLF_ROW - 4, PILE_W, YOU_ROW + CH - WOLF_ROW + 4, () => go('tally'));
+    if (m.deck.length > 1) back(PILE_X + 3, DY - 3, PILE_W, CH);
+    card(PILE_X, DY, PILE_W, CH, m.deck[m.deck.length - 1]);
+    badge(PILE_X, DY, PILE_W, CH, String(m.deck.length));
+  } else { emptySlot(PILE_X, DY, PILE_W, CH); say(PILE_X, DY, PILE_W, CH, 'EMPTY', 'small'); }
+  hit(PILE_X, DY - 4, PILE_W, CH + 22, () => go('tally'));
   // cards
   const lay = layoutTable();
   for (const lx of lay.links) for (let y = WOLF_ROW + CH + 2; y < YOU_ROW - 2; y += 4) fill(lx - 1, y, 3, 2, '#000');
