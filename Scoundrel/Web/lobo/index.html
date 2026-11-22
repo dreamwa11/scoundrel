@@ -379,8 +379,10 @@ function drawTable() {
   wolfScene(BACKDROP, STRIP_TOP, true);
   // score bar
   let x = 12;
-  const counter = (art, n) => { icon(art, x, TOPBAR / 2 - 12); const tw = widthOf(String(n), 'large'); say(x + 28, 0, tw + 4, TOPBAR, String(n), 'large', 'left'); x += 28 + tw + 14; };
+  const SH = 36;
+  const counter = (art, n) => { icon(art, x, SH / 2 - 10); const tw = widthOf(String(n), 'large'); say(x + 28, 2, tw + 4, SH, String(n), 'large', 'left'); x += 28 + tw + 14; };
   counter('icon_lobo_wolf_24', m.wolfScore); counter('icon_lobo_you_24', m.youScore);
+  say(12, SH, 160, 18, `PLAYING TO ${m.target}`, 'small', 'left');
   say(0, 0, W, TOPBAR, `Hand ${m.hand}`, 'value');
   const mx = W - 12 - 46, my = TOPBAR / 2 - 23;
   fill(mx, my, 46, 46, '#fff', 8); stroke(mx, my, 46, 46, '#000', 2, 8); icon('icon_lobo_menu_24', mx + 11, my + 11);
@@ -411,7 +413,6 @@ function drawTable() {
   }
   fill(0, STRIP_TOP, W, STRIP_H, '#000');
   prose(12, STRIP_TOP + 4, W - 24, STRIP_H - 8, messageText(), 'body', 2, true);
-  say(0, STRIP_TOP + STRIP_H + 8, W, 24, `PLAYING TO ${m.target}    RESHUFFLE AFTER HAND ${reshuffleAfter(m)}`, 'small');
   if (m.phase !== 'play') return;
   const half = (W - 36) / 2, must = !anyMove(m);
   pill(12, BUTTONS, half, PILL_H, 'Fold', must, () => { sel = { p: [], w: [] }; if (foldHand(m)) afterHand(); }, 'icon_lobo_forearm_24');
