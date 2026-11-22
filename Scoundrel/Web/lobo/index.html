@@ -443,11 +443,10 @@ function listRows(rows, bottom) {
 }
 function drawMenu() {
   title('Lobo');
-  say(MARGIN, 104, W - 2 * MARGIN, 26, live() ? `You ${m.youScore}    Wolf ${m.wolfScore}    playing to ${m.target}` : `${store.matches} matches    ${store.won} won`, 'body');
+  say(MARGIN, 104, W - 2 * MARGIN, 26, live() ? `Wolf ${m.wolfScore}    You ${m.youScore}    playing to ${m.target}` : `${store.matches} matches    ${store.won} won`, 'body');
   const rows = [];
   if (live()) rows.push(['Back to the table', () => go(m.phase === 'handover' ? 'handover' : 'table')]);
   rows.push(['New match', () => { if (live()) go('confirm'); else { setupCancelable = true; go('setup'); } }]);
-  if (live()) rows.push(['What is left in the deck', () => go('tally')]);
   rows.push(['How to play', () => { howPage = 0; howReturn = 'menu'; go('howto'); }]);
   const bottom = H - MARGIN, creditH = 30;
   say(MARGIN, bottom - creditH + 6, W - 2 * MARGIN, 24, 'Lobo by James Ernest, Crab Fragment Labs, 2022', 'small');
@@ -526,7 +525,7 @@ function drawHandOver() {
   headline(m.youTookHand ? 'You beat the Wolf' : 'The Wolf scores');
   endPicture(108, !m.youTookHand);
   say(0, 416, W, 60, `+${m.handPoints}`, 'big');
-  say(0, 480, W, 32, `You ${m.youScore}    Wolf ${m.wolfScore}`, 'large');
+  say(0, 480, W, 32, `Wolf ${m.wolfScore}    You ${m.youScore}`, 'large');
   let t = m.youTookHand ? (m.handPoints ? 'The points left in your hand go to you.' : 'An empty hand of your own: clean, but worth nothing.')
     : (m.handPoints <= 6 ? 'A cheap fold. The Wolf gets little.' : "Every point still in the Wolf's hand is his.");
   t += (RESHUFFLE_EVERY - m.since > 0 && m.deck.length + m.you.length + m.wolf.length >= 9) ? ' The next hand uses the same deck.' : ' The deck will be reshuffled.';
@@ -538,7 +537,7 @@ function drawMatchOver() {
   headline(won ? 'The Wolf retreats' : 'The Wolf wins');
   endPicture(108, !won);
   say(0, 416, W, 60, String(won ? m.youScore : m.wolfScore), 'big');
-  say(0, 480, W, 32, `You ${m.youScore}    Wolf ${m.wolfScore}`, 'large');
+  say(0, 480, W, 32, `Wolf ${m.wolfScore}    You ${m.youScore}`, 'large');
   say(0, 516, W, 30, `Match to ${m.target} over ${m.hand} hand${m.hand === 1 ? '' : 's'}.`, 'body');
   endButtons('New match', () => { setupCancelable = true; go('setup'); });
 }

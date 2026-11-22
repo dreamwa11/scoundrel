@@ -1,6 +1,6 @@
 /* Offline copy of the CrossPlay (PaperMono) version of Lobo. The game is one file with
    everything inside it, so once index.html is cached it never needs the network. */
-var CACHE = 'crossplay-lobo-v4';
+var CACHE = 'crossplay-lobo-v5';
 var FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-lobo-180.png', 'icon-lobo-512.png'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
