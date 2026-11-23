@@ -1,8 +1,16 @@
 name: Build Scoundrel iOS app
 
 on:
+  # Only when the app itself changes: the web version and the README have their
+  # own lives and should not start a Mac build.
   push:
     branches: [main]
+    paths:
+      - "Scoundrel/**"
+      - "!Scoundrel/Web/**"
+      - "Support/**"
+      - "project.yml"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
 
 jobs:
